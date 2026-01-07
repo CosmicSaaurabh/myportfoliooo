@@ -501,3 +501,66 @@ footer {
         flex-direction: column;
     }
 }
+
+/* Competitive Coding Profiles Section */
+.profiles {
+  padding: 80px 0;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.profiles h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 60px;
+  color: var(--text-primary);
+}
+
+.profiles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 30px;
+}
+
+.profile-card {
+  background: white;
+  border-radius: 15px;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profile-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+.profile-icon {
+  font-size: 3rem;
+  color: var(--accent);
+  margin-bottom: 20px;
+  display: block;
+}
+
+.profile-card h3 {
+  font-size: 1.5rem;
+  margin: 20px 0 15px 0;
+  color: var(--text-primary);
+}
+
+.profile-card h3 a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.profile-card h3 a:hover {
+  color: var(--accent-light);
+}
+
+.profile-card p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
