@@ -46,6 +46,9 @@ body {
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border);
     box-shadow: var(--shadow);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
 }
 
 .navbar .container {
@@ -651,3 +654,4 @@ footer {
     height: 2.5px;
   }
 }
+
