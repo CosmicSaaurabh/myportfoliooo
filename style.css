@@ -54,6 +54,7 @@ body {
 .navbar .container {
     display: flex;
     justify-content: space-between;
+      width: 100%;
     align-items: center;
     padding: 1rem 20px;
 }
@@ -64,6 +65,7 @@ body {
     color: var(--accent-dark);
     text-decoration: none;
     letter-spacing: -0.5px;
+      flex-shrink: 0;
 }
 
 .nav-menu {
@@ -647,6 +649,7 @@ footer {
   .hamburger {
     width: auto;
     padding: 0.25rem;
+        flex-shrink: 0;
   }
 
   .hamburger span {
@@ -654,4 +657,5 @@ footer {
     height: 2.5px;
   }
 }
+
 
