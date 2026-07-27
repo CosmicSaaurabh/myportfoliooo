@@ -11,7 +11,7 @@
 <helmet>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<title>Saurabh Mishra — main.saurabh</title>
+<title>Sauraabh Mishra — main.sauraabh</title>
 <style>
 :root{
   --bg:#272822; --bg-2:#1e1f1c; --bg-3:#2f302a; --panel:#232420;
@@ -72,7 +72,7 @@ button{font-family:inherit}
 .c-plain{color:var(--fg)}
 .blank-row{height:14px}
 
-/* main.saurabh hero */
+/* main.sauraabh hero */
 .hero-status{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:var(--fg-dim);border:1px solid var(--border);padding:5px 12px;border-radius:20px;margin-bottom:26px}
 .hero-status .dot-live{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px 2px color-mix(in srgb, var(--green) 60%, transparent);animation:blink 2s ease-in-out infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
@@ -194,7 +194,7 @@ button{font-family:inherit}
 <div class="ide">
   <aside class="sidebar">
     <p class="sidebar-title">Explorer</p>
-    <p class="sidebar-folder">▾ 📁 saurabh-mishra</p>
+    <p class="sidebar-folder">▾ 📁 sauraabh-mishra</p>
     <ul class="file-list">
       <sc-for list="{{ files }}" as="f" hint-placeholder-count="7">
         <li class="{{ f.rowClass }}" onClick="{{ f.onClick }}">
@@ -218,7 +218,7 @@ button{font-family:inherit}
         <span class="dot" style="background:#ffbd2e"></span>
         <span class="dot" style="background:#27c93f"></span>
       </div>
-      <span style="font-size:12.5px;color:var(--fg-dim)">saurabh-mishra — {{ activeFileLabel }}</span>
+      <span style="font-size:12.5px;color:var(--fg-dim)">sauraabh-mishra — {{ activeFileLabel }}</span>
     </div>
 
     <div class="tabbar">
@@ -231,7 +231,7 @@ button{font-family:inherit}
           </sc-if>
         </div>
       </sc-for>
-      <button type="button" class="run-btn" onClick="{{ runProgram }}">▶ Run main.saurabh</button>
+      <button type="button" class="run-btn" onClick="{{ runProgram }}">▶ Run main.sauraabh</button>
     </div>
 
     <div class="pane">
@@ -239,10 +239,10 @@ button{font-family:inherit}
 
         <sc-if value="{{ isMain }}" hint-placeholder-val="{{ true }}">
           <div>
-            <div class="ln-row"><span class="ln">1</span><span class="ln-content c-comment">// main.saurabh — run to say hello</span></div>
+            <div class="ln-row"><span class="ln">1</span><span class="ln-content c-comment">// main.sauraabh — run to say hello</span></div>
             <div class="blank-row"></div>
-            <div class="ln-row"><span class="ln">2</span><span class="ln-content"><span class="c-key">const</span> <span class="c-plain">saurabh</span> = {</span></div>
-            <div class="ln-row"><span class="ln">3</span><span class="ln-content">&nbsp;&nbsp;<span class="c-param">name</span>: <span class="c-str">"Saurabh Mishra"</span>,</span></div>
+            <div class="ln-row"><span class="ln">2</span><span class="ln-content"><span class="c-key">const</span> <span class="c-plain">sauraabh</span> = {</span></div>
+            <div class="ln-row"><span class="ln">3</span><span class="ln-content">&nbsp;&nbsp;<span class="c-param">name</span>: <span class="c-str">"Sauraabh Mishra"</span>,</span></div>
             <div class="ln-row"><span class="ln">4</span><span class="ln-content">&nbsp;&nbsp;<span class="c-param">role</span>: <span class="c-str">"Backend Engineer — Distributed Systems"</span>,</span></div>
             <div class="ln-row"><span class="ln">5</span><span class="ln-content">&nbsp;&nbsp;<span class="c-param">based</span>: <span class="c-str">"Bangalore, India"</span>,</span></div>
             <div class="ln-row"><span class="ln">6</span><span class="ln-content">};</span></div>
@@ -262,7 +262,7 @@ button{font-family:inherit}
             <div class="ln-row" style="margin-top:6px"><span class="ln">11</span><span class="ln-content">}</span></div>
 
             <div class="actions-row">
-              <a class="act-btn primary" href="assets/Saurabh_Mishra_Resume.pdf" download><span class="p">&gt;</span> Download résumé</a>
+              <a class="act-btn primary" href="assets/Sauraabh_Mishra_Resume.pdf" download><span class="p">&gt;</span> Download résumé</a>
               <a class="act-btn" href="https://github.com/CosmicSaaurabh" target="_blank" rel="noopener"><span class="p">&gt;</span> View GitHub</a>
               <a class="act-btn" href="https://www.linkedin.com/in/2bsaurabh/" target="_blank" rel="noopener"><span class="p">&gt;</span> Connect on LinkedIn</a>
             </div>
@@ -272,7 +272,7 @@ button{font-family:inherit}
         <sc-if value="{{ isAbout }}" hint-placeholder-val="{{ false }}">
           <div>
             <div class="ln-row"><span class="ln">1</span><span class="ln-content c-comment">/**</span></div>
-            <div class="ln-row"><span class="ln">2</span><span class="ln-content c-comment">&nbsp;* about.saurabh</span></div>
+            <div class="ln-row"><span class="ln">2</span><span class="ln-content c-comment">&nbsp;* about.sauraabh</span></div>
             <div class="ln-row"><span class="ln">3</span><span class="ln-content c-comment">&nbsp;*/</span></div>
             <div class="blank-row"></div>
             <div class="ln-row"><span class="ln">4</span><span class="ln-content c-str">"I'm a backend engineer who likes the unglamorous parts: making a system survive a bad day. At Capslock Marketplaces I own backend services for an app serving 10M+ users — re-architecting request handling around Kafka so peak traffic stops piling up behind a blocking call."</span></div>
@@ -295,7 +295,7 @@ button{font-family:inherit}
 
         <sc-if value="{{ isExperience }}" hint-placeholder-val="{{ false }}">
           <div>
-            <div class="ln-row" style="margin-bottom:16px"><span class="ln">1</span><span class="ln-content c-comment">// experience.saurabh — click a role to expand contributions</span></div>
+            <div class="ln-row" style="margin-bottom:16px"><span class="ln">1</span><span class="ln-content c-comment">// experience.sauraabh — click a role to expand contributions</span></div>
             <sc-for list="{{ jobs }}" as="job" hint-placeholder-count="4">
               <div class="job-card">
                 <div class="job-head" onClick="{{ job.toggle }}">
@@ -327,7 +327,7 @@ button{font-family:inherit}
 
         <sc-if value="{{ isEducation }}" hint-placeholder-val="{{ false }}">
           <div>
-            <div class="ln-row" style="margin-bottom:16px"><span class="ln">1</span><span class="ln-content c-comment">// education.saurabh — click an entry to expand</span></div>
+            <div class="ln-row" style="margin-bottom:16px"><span class="ln">1</span><span class="ln-content c-comment">// education.sauraabh — click an entry to expand</span></div>
             <sc-for list="{{ education }}" as="e" hint-placeholder-count="3">
               <div class="job-card">
                 <div class="job-head" onClick="{{ e.toggle }}">
@@ -353,7 +353,7 @@ button{font-family:inherit}
 
         <sc-if value="{{ isProjects }}" hint-placeholder-val="{{ false }}">
           <div>
-            <div class="ln-row"><span class="ln">1</span><span class="ln-content c-comment">// projects.saurabh — opens full write-up in a new tab</span></div>
+            <div class="ln-row"><span class="ln">1</span><span class="ln-content c-comment">// projects.sauraabh — opens full write-up in a new tab</span></div>
             <div class="proj-grid">
               <sc-for list="{{ projects }}" as="p" hint-placeholder-count="2">
                 <a class="proj-card" href="{{ p.github }}" target="_blank" rel="noopener">
@@ -374,7 +374,7 @@ button{font-family:inherit}
 
         <sc-if value="{{ isSkills }}" hint-placeholder-val="{{ false }}">
           <div>
-            <div class="ln-row" style="margin-bottom:8px"><span class="ln">1</span><span class="ln-content c-comment">// skills.saurabh — click a skill for level & where I've used it</span></div>
+            <div class="ln-row" style="margin-bottom:8px"><span class="ln">1</span><span class="ln-content c-comment">// skills.sauraabh — click a skill for level & where I've used it</span></div>
             <sc-for list="{{ skillGroups }}" as="g" hint-placeholder-count="4">
               <div class="skill-group">
                 <p class="skill-group-title">{{ g.name }}</p>
@@ -406,7 +406,7 @@ button{font-family:inherit}
 
         <sc-if value="{{ isProfiles }}" hint-placeholder-val="{{ false }}">
           <div>
-            <div class="ln-row" style="margin-bottom:8px"><span class="ln">1</span><span class="ln-content c-comment">// profiles.saurabh — competitive programming</span></div>
+            <div class="ln-row" style="margin-bottom:8px"><span class="ln">1</span><span class="ln-content c-comment">// profiles.sauraabh — competitive programming</span></div>
             <div class="cp-grid">
               <sc-for list="{{ codingProfiles }}" as="cp" hint-placeholder-count="6">
                 <a class="cp-card" href="{{ cp.url }}" target="_blank" rel="noopener">
@@ -434,7 +434,7 @@ button{font-family:inherit}
 
         <sc-if value="{{ isContact }}" hint-placeholder-val="{{ false }}">
           <div>
-            <div class="ln-row" style="margin-bottom:8px"><span class="ln">1</span><span class="ln-content c-comment">// contact.saurabh — export default</span></div>
+            <div class="ln-row" style="margin-bottom:8px"><span class="ln">1</span><span class="ln-content c-comment">// contact.sauraabh — export default</span></div>
             <div class="contact-obj">
               <div class="contact-line"><span class="contact-key">email:</span> <a href="mailto:swe.saurabh.mishra@gmail.com">swe.saurabh.mishra@gmail.com</a></div>
               <div class="contact-line"><span class="contact-key">linkedin:</span> <a href="https://www.linkedin.com/in/2bsaurabh/" target="_blank" rel="noopener">linkedin.com/in/2bsaurabh</a></div>
@@ -453,7 +453,7 @@ button{font-family:inherit}
       <div class="right">
         <span>UTF-8</span>
         <span>LF</span>
-        <span>Saurabh Lang</span>
+        <span>Sauraabh Lang</span>
         <span>● No Problems</span>
       </div>
     </div>
@@ -463,17 +463,17 @@ button{font-family:inherit}
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 const FILES = [
-  { id: "main", label: "main.saurabh", color: "var(--blue)" },
-  { id: "about", label: "about.saurabh", color: "var(--pink)" },
-  { id: "experience", label: "experience.saurabh", color: "var(--green)" },
-  { id: "education", label: "education.saurabh", color: "var(--teal)" },
-  { id: "projects", label: "projects.saurabh", color: "var(--yellow)" },
-  { id: "skills", label: "skills.saurabh", color: "var(--purple)" },
-  { id: "profiles", label: "profiles.saurabh", color: "var(--orange)" },
-  { id: "contact", label: "contact.saurabh", color: "var(--violet)" },
+  { id: "main", label: "main.sauraabh", color: "var(--blue)" },
+  { id: "about", label: "about.sauraabh", color: "var(--pink)" },
+  { id: "experience", label: "experience.sauraabh", color: "var(--green)" },
+  { id: "education", label: "education.sauraabh", color: "var(--teal)" },
+  { id: "projects", label: "projects.sauraabh", color: "var(--yellow)" },
+  { id: "skills", label: "skills.sauraabh", color: "var(--purple)" },
+  { id: "profiles", label: "profiles.sauraabh", color: "var(--orange)" },
+  { id: "contact", label: "contact.sauraabh", color: "var(--violet)" },
 ];
 
-const LINE1 = "Hi, I'm Saurabh Mishra — backend engineer for systems that don't fall over.";
+const LINE1 = "Hi, I'm Sauraabh Mishra — backend engineer for systems that don't fall over.";
 const LINE2 = "I scale backend infra for 10M+ users at Capslock Marketplaces; before that, 3+ years deep in Couchbase's SDKs.";
 const LINE3 = "Off the clock: 2,000+ competitive programming problems solved across 6 platforms.";
 
@@ -501,7 +501,6 @@ class Component extends DCLogic {
       this.setState((s) => {
         if (s.typeProgress >= total) {
           clearInterval(this._typer);
-          this.downloadResume();
           return null;
         }
         return { typeProgress: s.typeProgress + 2 };
@@ -545,8 +544,8 @@ class Component extends DCLogic {
 
   downloadResume = () => {
     const a = document.createElement("a");
-    a.href = "assets/Saurabh_Mishra_Resume.pdf";
-    a.download = "Saurabh_Mishra_Resume.pdf";
+    a.href = "assets/Sauraabh_Mishra_Resume.pdf";
+    a.download = "Sauraabh_Mishra_Resume.pdf";
     a.click();
   };
 
