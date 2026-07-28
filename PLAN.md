@@ -1,57 +1,56 @@
 # PLAN.md — Portfolio Roadmap
 
-Maintained by the planning/verification agent. Implementation happens via approved phase prompts only (see CLAUDE.md for roles). Phases 1–2 are done and verified.
+Maintained by the planning/verification agent. Implementation happens via approved phase prompts only (see CLAUDE.md for roles, constraints, and per-phase verification records).
 
-## Phase 3 — Command palette (next)
+## Delivered
 
-Ctrl/Cmd+K opens a VS Code-style fuzzy-search palette. Two modes like VS Code: plain query = jump to files (opens editor tabs); `>` prefix = run terminal commands (from the shared REGISTRY, echoed into the terminal so there's one history). Keyboard-first: arrows/Enter/Esc, match-highlighting, recent-items ranking.
+| Phase | What shipped |
+|---|---|
+| 1 | IDE shell — activity bar, file tree, tabbed editor with per-filetype renderers, title/status bars, hash routing, localStorage persistence, mobile collapse |
+| 2 | Integrated terminal — resizable panel, command registry, history, tab completion, easter eggs (sudo hire-me, vim trap, rm -rf, konami matrix) |
+| 3 | Command palette — Ctrl/Cmd+K, fuzzy matcher, file mode + `>` command mode over the shared REGISTRY, recents, full a11y |
+| 4 | Theme switcher — Monokai/Dracula/Solarized Dark/GitHub Light, all AA-checked; gear menu + `theme` command + palette + live status bar; FOUC guard |
+| 5 | Live data — `livedata.js` descriptor sources, 6h TTL cache, rate-limit cooldown, static-always-wins fallback; `profiles` + `refresh` commands |
+| 5.1 | Repo-view content honesty — fabricated "Issues (closed)" replaced with "Engineering Decisions"; real issues link for public repos |
+| 6 | Career as `git log --graph` — `experience/history.git`, branch/merge graph, `git log`/`--oneline`/`branch` commands, mobile timeline |
+| 7 | Polish — welcome typing animation, `?` shortcuts overlay, decorative minimap (≥1200px), print stylesheet, welcome-view dedupe, Ctrl+Alt+Tab rebind |
 
-**Task 0 (prerequisite + debt):** lift `REGISTRY` out of `initTerminal()` to an exported module-level structure, and clear the Phase 2 punch list from CLAUDE.md (ls-file bug, history dedupe, Backquote fallback, mobile open-overlay close, rm busy-guard, vim Tab escape).
+Open issue from Phase 7 is tracked at the top of CLAUDE.md.
 
-## Phase 4 — Theme switcher
+---
 
-Promoted from "polish" to its own phase — it's already stubbed in two places (`theme` command, settings gear) and the CSS-variable architecture makes it cheap. 3–4 real editor themes: Monokai (default), Dracula, Solarized Dark, one light theme (GitHub Light). Wire it into: the settings gear, the `theme <name>` terminal command, and the palette (`>theme`). Persist choice; respect `prefers-color-scheme` for first visit default; status bar shows active theme.
+## Next up — Tier 1: ship readiness (do before sharing the URL anywhere)
 
-## Phase 5 — Live data (GitHub + coding profiles)
+These are the only things genuinely blocking a public link.
 
-Self-updating instead of hardcoded: GitHub pinned repos + contribution data, Codeforces rating (official public API), LeetCode rating. Render project files' README from their repos once public, so the portfolio tracks the actual code.
+- **Favicon + Open Graph/Twitter meta tags + preview image.** Today the link previews as a bare URL — no title, image, or description. Highest-impact item on this list the moment the URL goes on a résumé or LinkedIn.
+- **`404.html`** for GitHub Pages (hash routing mostly avoids it, but direct-path typos land nowhere).
+- **Font loading.** Google Fonts currently load render-blocking; self-host or preload.
+- **Lighthouse pass** — record performance / a11y / SEO scores in CLAUDE.md.
+- **Content debt** (Saurabh's calls, listed in CLAUDE.md): the "Sauraabh" spelling across title/welcome/content/résumé filename; verify the six `repoStatus` values from a non-rate-limited IP; keep the résumé PDF in `assets/` current.
 
-**Reality constraints to design around (verifier will check these):**
-- Everything client-side static — no server, no secrets. Unauthenticated GitHub API = 60 req/hr/IP: cache responses in localStorage with a TTL (e.g. 6h), and always fall back to the static data in `file-contents.js` when offline/rate-limited/failed. Live data decorates the static content, never replaces it as the source of truth.
-- LeetCode has no official public API (community endpoints are scrape-based and break) — treat LeetCode as best-effort with permanent static fallback, or skip it.
-- The GitHub contribution graph has no official JSON API — either render from the events API (approximation), embed the SVG image endpoints commonly used for this, or drop the graph and show pinned repos + language stats, which ARE reliable.
+## Tier 2 — differentiators (highest return on effort after Tier 1)
 
-## Phase 5.1 — Repo view content honesty (done)
+The IDE shell is now the strongest part of the site; content is the bottleneck.
 
-Removed the fabricated closed-GitHub-issue framing from the project repo view (renamed to "Engineering Decisions", stripped fake issue numbers and the GitHub-specific icon). Added a real static "Track progress on GitHub →" link to `{repo}/issues` for public repos only.
+- **`posts/` folder with 2–3 technical write-ups.** Raw material already exists in the Sentinel Engine design docs (why `SKIP LOCKED` beats advisory locks; how fencing tokens make a zombie worker's late writes harmless). A portfolio that *argues* about distributed systems beats one that lists them — and these are reusable in interviews and on LinkedIn.
+- **Embedded interactive systems demo** — a small Raft leader-election or lease-expiry visualization. Likely the most memorable thing on the site for an engineer reviewer, and doubles as proof the mechanism is understood.
+- **Live build-progress panel for Sentinel Engine.** `livedata.js` already exists; the repo has 15 open issues and a phased task breakdown. Turns "unfinished project" into "visibly active project" — honest and more compelling than a static claim.
 
-## Phase 6 — Experience as git history
+## Tier 3 — IDE features with real utility
 
-Replace/augment the experience view with a rendered `git log --graph`: each role a branch, achievements as conventional commits (`perf(sdk): sustain 10K ops/sec with zero failures`). Data still from `file-contents.js` (add a `commitType` field per highlight rather than parsing). Toggle between git-log view and the existing YAML view — don't delete a working renderer.
+- **Global content search (Ctrl+Shift+F)** across all files. The one genuine functional gap: the palette jumps to files but can't find "Raft" or "Kafka" *inside* them, which is exactly how a recruiter skims.
+- Breadcrumbs above the editor; split view. Would look right, change little.
 
-## Polish backlog (small items, bundle into any phase)
+## Polish backlog (bundle into any phase)
 
-- ~~Typing animation on the welcome view's title line with blinking block cursor (respect prefers-reduced-motion).~~ — done in Phase 7.
-- ~~Decorative minimap strip on wide screens (≥1200px), pure CSS/canvas from the active file's line data.~~ — done in Phase 7.
-- ~~Keyboard-shortcuts help: `?` overlay or a `shortcuts` terminal command.~~ — done in Phase 7.
-- ~~Print stylesheet: printing any view produces something readable (recruiters do print).~~ — done in Phase 7.
-- Favicon + Open Graph/Twitter meta tags + a social preview image (matters the moment this link goes on a résumé).
-- 404.html for GitHub Pages (hash routing mostly avoids it, but direct-path typos land somewhere).
-- Lighthouse pass: performance + a11y + SEO scores recorded in CLAUDE.md after each phase.
-
-## Phase 7 — Polish backlog (done)
-
-Welcome-view dedupe (Task 0), typing animation (mask/overlay technique, real text always in DOM), `?` shortcuts overlay + `shortcuts` command, decorative click-to-scroll minimap on `.code` views ≥1200px, and a print stylesheet forcing light rendering with chrome hidden. See CLAUDE.md Phase status for the full breakdown.
-
-## Content debt (Saurabh, not agents — from CLAUDE.md)
-
-- Resolve "Sauraabh" spelling everywhere (title, welcome, content, résumé asset filename) — decide and make consistent.
-- Keep the résumé PDF in `assets/` current.
-- Résumé references portfolio? Add the portfolio URL to the résumé header once Phase 3+ ships.
+- `shortcuts` overlay exists; keep it in sync if bindings change.
+- Print stylesheet exists; re-test after any card/class rename.
 
 ## Explicitly rejected (so nobody re-proposes them)
 
 - Frameworks/build steps (React, bundlers) — vanilla is a hard constraint.
 - xterm.js or other heavy terminal libs.
-- Analytics/trackers — keep the site clean.
+- Analytics/trackers.
 - Sound effects on the easter eggs.
+- Stars/forks/watchers anywhere in the UI — they're 0 on personal projects and actively harm the impression.
