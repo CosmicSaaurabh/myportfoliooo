@@ -1,0 +1,28 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors / IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Local AI assistant tooling (not part of the static site)
+.cursor/
+.claude/
+
+# graphify knowledge-graph outputs
+graphify-out/
+
+# Dependencies (none required, but ignore if added later)
+node_modules/
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Logs / caches
+*.log
+.cache/

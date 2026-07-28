@@ -1,784 +1,185 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="./support.js"></script>
-</head>
-<body>
-<x-dc>
-
-<helmet>
+<script>(function(){var t=localStorage.getItem('ide.theme.v1');if(!t)t=matchMedia('(prefers-color-scheme: light)').matches?'github-light':'monokai';document.documentElement.setAttribute('data-theme',t);})();</script>
+<meta name="theme-color" content="#272822" id="theme-color-meta">
+<title>Sauraabh Mishra — Backend & Distributed Systems Engineer</title>
+<meta name="description" content="Sauraabh Mishra — Backend Software Engineer specializing in distributed systems, SDK development, and cloud-native platforms. Portfolio built as a VS Code-style IDE shell.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<title>Sauraabh Mishra — main.sauraabh</title>
-<style>
-:root{
-  --bg:#272822; --bg-2:#1e1f1c; --bg-3:#2f302a; --panel:#232420;
-  --fg:#f8f8f2; --fg-dim:#a1a191; --comment:#75715e; --border:#3e3d32;
-  --pink:#f92672; --green:#a6e22e; --yellow:#e6db74; --purple:#ae81ff;
-  --blue:#66d9ef; --orange:#fd971f; --violet:#c792ea; --lineno:#75715e; --teal:#79dfc1;
-}
-*{box-sizing:border-box}
-html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font-family:'JetBrains Mono',ui-monospace,monospace;-webkit-font-smoothing:antialiased}
-::selection{background:color-mix(in srgb, var(--blue) 35%, transparent)}
-a{color:var(--blue);text-decoration:none}
-a:hover{color:var(--green)}
-button{font-family:inherit}
-.ide{display:flex;height:100vh;width:100%;overflow:hidden;background:
-  radial-gradient(900px 500px at 90% -10%, color-mix(in srgb, var(--blue) 6%, transparent), transparent 60%),
-  radial-gradient(900px 600px at 0% 110%, color-mix(in srgb, var(--pink) 5%, transparent), transparent 60%),
-  var(--bg);}
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
 
-/* sidebar */
-.sidebar{width:240px;flex:none;background:var(--bg-2);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:18px 0}
-.sidebar-title{font-size:11px;letter-spacing:.12em;color:var(--fg-dim);padding:0 18px;margin:0 0 14px;text-transform:uppercase}
-.sidebar-folder{font-size:13px;color:var(--fg-dim);padding:0 18px;margin:0 0 10px;display:flex;align-items:center;gap:6px}
-.file-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
-.file-row{display:flex;align-items:center;gap:9px;padding:8px 18px 8px 30px;font-size:13.5px;color:var(--fg-dim);cursor:pointer;border-left:2px solid transparent;transition:background .12s, color .12s}
-.file-row:hover{background:color-mix(in srgb, var(--fg) 5%, transparent);color:var(--fg)}
-.file-row.active{background:color-mix(in srgb, var(--blue) 12%, transparent);color:var(--fg);border-left-color:var(--blue)}
-.file-dot{width:8px;height:8px;border-radius:2px;flex:none}
-.sidebar-footer{margin-top:auto;padding:14px 18px 0;border-top:1px solid var(--border)}
-.resume-row{display:flex;align-items:center;gap:9px;padding:9px 0;font-size:13px;color:var(--fg-dim);cursor:pointer}
-.resume-row:hover{color:var(--yellow)}
+<div class="ide" id="ide">
 
-/* main column */
-.editor-col{flex:1;display:flex;flex-direction:column;min-width:0}
-.titlebar{height:38px;flex:none;display:flex;align-items:center;gap:10px;padding:0 16px;border-bottom:1px solid var(--border);background:var(--bg-2)}
-.dots{display:flex;gap:7px}
-.dot{width:11px;height:11px;border-radius:50%}
-.tabbar{flex:none;display:flex;align-items:stretch;background:var(--bg-2);border-bottom:1px solid var(--border);overflow-x:auto}
-.tab{display:flex;align-items:center;gap:8px;padding:10px 14px;font-size:13px;color:var(--fg-dim);border-right:1px solid var(--border);cursor:pointer;white-space:nowrap;position:relative}
-.tab.active{background:var(--bg);color:var(--fg)}
-.tab.active::after{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:var(--blue)}
-.tab .x{opacity:.5;padding:2px;border-radius:3px}
-.tab .x:hover{opacity:1;background:color-mix(in srgb, var(--fg) 15%, transparent)}
-.run-btn{margin-left:auto;flex:none;display:flex;align-items:center;gap:7px;padding:7px 14px;margin:5px 10px;background:color-mix(in srgb, var(--green) 14%, transparent);border:1px solid color-mix(in srgb, var(--green) 45%, transparent);color:var(--green);border-radius:6px;font-size:12.5px;cursor:pointer;transition:background .15s,transform .15s}
-.run-btn:hover{background:color-mix(in srgb, var(--green) 24%, transparent);transform:translateY(-1px)}
-
-.pane{flex:1;overflow-y:auto;padding:28px clamp(20px,4vw,56px) 80px}
-.code{max-width:900px}
-.ln-row{display:flex;gap:20px;align-items:flex-start;padding:3px 0}
-.ln{flex:none;width:26px;text-align:right;color:var(--lineno);font-size:13px;user-select:none;opacity:.7}
-.ln-content{font-size:15px;line-height:1.7}
-.c-comment{color:var(--comment);font-style:italic}
-.c-key{color:var(--pink)}
-.c-str{color:var(--yellow)}
-.c-fn{color:var(--green)}
-.c-num{color:var(--purple)}
-.c-type{color:var(--blue)}
-.c-param{color:var(--orange)}
-.c-plain{color:var(--fg)}
-.blank-row{height:14px}
-
-/* main.sauraabh hero */
-.hero-status{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:var(--fg-dim);border:1px solid var(--border);padding:5px 12px;border-radius:20px;margin-bottom:26px}
-.hero-status .dot-live{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px 2px color-mix(in srgb, var(--green) 60%, transparent);animation:blink 2s ease-in-out infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-.console{margin-top:28px;background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:18px 20px;box-shadow:0 8px 30px -12px rgba(0,0,0,.6)}
-.console-head{display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:11.5px;color:var(--fg-dim);letter-spacing:.06em;text-transform:uppercase}
-.console-line{font-size:14.5px;line-height:1.7;color:var(--fg-dim)}
-.console-line .arrow{color:var(--green);margin-right:8px}
-.cursor{display:inline-block;width:8px;height:16px;background:var(--fg);vertical-align:middle;margin-left:2px;animation:blink 1s step-end infinite}
-.actions-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}
-.act-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:6px;font-size:13px;border:1px solid var(--border);color:var(--fg-dim);cursor:pointer;transition:all .15s}
-.act-btn .p{color:var(--comment)}
-.act-btn:hover{border-color:var(--blue);color:var(--fg)}
-.act-btn.primary{border-color:color-mix(in srgb, var(--green) 50%, transparent);color:var(--green)}
-.act-btn.primary:hover{background:color-mix(in srgb, var(--green) 12%, transparent)}
-
-/* about facts */
-.fact-obj{margin-top:22px;background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:18px 22px}
-.fact-line{display:flex;gap:10px;font-size:14.5px;padding:5px 0}
-.fact-key{color:var(--blue)}
-.fact-val{color:var(--yellow)}
-
-/* experience */
-.job-card{border:1px solid var(--border);border-radius:8px;background:var(--panel);margin-bottom:16px;overflow:hidden}
-.job-head{display:flex;align-items:center;gap:12px;padding:16px 18px;cursor:pointer}
-.job-caret{color:var(--fg-dim);font-size:12px;flex:none;width:14px;transition:transform .15s}
-.job-caret.open{transform:rotate(90deg);color:var(--green)}
-.job-logo{flex:none;width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
-.job-role{color:var(--green);font-size:15.5px}
-.job-company{color:var(--fg-dim);font-size:13.5px;margin-left:4px}
-.job-period{margin-left:auto;font-size:12.5px;color:var(--comment);flex:none}
-.job-tag{font-size:10.5px;color:var(--bg);background:var(--blue);padding:2px 8px;border-radius:10px;margin-left:10px;flex:none;font-weight:600}
-.job-body{padding:0 18px 18px 44px;display:flex;flex-direction:column;gap:9px}
-.job-body li{list-style:none;font-size:14px;line-height:1.55;color:var(--fg-dim);display:flex;gap:10px}
-.job-body li::before{content:"›";color:var(--pink);flex:none}
-
-/* projects */
-.proj-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;margin-top:20px}
-.proj-card{display:block;border:1px solid var(--border);background:var(--panel);border-radius:8px;padding:20px 22px;transition:transform .18s,border-color .18s,box-shadow .18s}
-.proj-card:hover{transform:translateY(-3px);border-color:var(--blue);box-shadow:0 10px 30px -14px rgba(0,0,0,.7)}
-.proj-file{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--fg-dim);margin-bottom:12px}
-.proj-title{color:var(--green);font-size:17px;margin:0}
-.proj-sub{color:var(--blue);font-size:12.5px;margin:5px 0 0}
-.proj-summary{color:var(--fg-dim);font-size:13.5px;line-height:1.6;margin:12px 0 0}
-.proj-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
-.proj-tag{font-size:10.5px;padding:3px 8px;border:1px solid var(--border);border-radius:4px;color:var(--fg-dim)}
-
-/* skills */
-.skill-group{margin-bottom:30px}
-.skill-group-title{color:var(--comment);font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;margin:0 0 14px}
-.skill-item{border-bottom:1px solid var(--border)}
-.skill-row{display:grid;grid-template-columns:16px 150px 1fr auto;align-items:center;gap:14px;padding:9px 0;cursor:pointer}
-.skill-caret{color:var(--comment);font-size:11px;transition:transform .15s}
-.skill-caret.open{transform:rotate(90deg);color:var(--green)}
-.skill-name{font-size:13.5px;color:var(--fg)}
-.skill-meter{font-family:'JetBrains Mono',ui-monospace,monospace;letter-spacing:2px;font-size:13px;white-space:nowrap;opacity:0;transform:translateX(-6px);transition:opacity .5s ease, transform .5s ease}
-.skill-meter.on{opacity:1;transform:translateX(0)}
-.skill-meter .empty{color:var(--border)}
-.skill-tier{flex:none;font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:10px;white-space:nowrap;letter-spacing:.02em}
-.skill-detail{padding:4px 0 16px 30px;font-size:13px;color:var(--fg-dim);line-height:1.6}
-.skill-usedat-label{display:flex;align-items:center;gap:6px;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--green);margin:12px 0 8px}
-.skill-usedat{display:flex;flex-wrap:wrap;gap:8px}
-.skill-usedat span{font-size:11.5px;font-weight:600;padding:5px 12px;border:1px solid color-mix(in srgb, var(--green) 45%, var(--border));border-radius:10px;color:var(--fg);background:color-mix(in srgb, var(--green) 12%, transparent)}
-
-/* profiles */
-.cp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:20px}
-.cp-card{display:flex;flex-direction:column;gap:12px;padding:18px 20px;border:1px solid var(--border);background:var(--panel);border-radius:8px;transition:transform .18s,border-color .18s}
-.cp-card:hover{transform:translateY(-3px);border-color:var(--purple)}
-.cp-top{display:flex;align-items:center;gap:10px}
-.cp-icon{width:26px;height:26px;flex:none}
-.cp-name{color:var(--fg);font-size:14.5px}
-.cp-stat{font-size:22px;color:var(--yellow);margin:0}
-.cp-label{font-size:11.5px;color:var(--comment);margin:2px 0 0;text-transform:uppercase;letter-spacing:.03em}
-.cp-bar{height:5px;border-radius:3px;background:var(--bg-3);overflow:hidden}
-.cp-bar-fill{height:100%;border-radius:3px;width:0;background:var(--purple);transition:width 1.1s cubic-bezier(.16,1,.3,1)}
-.ach-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:26px}
-.ach-strip .a-item{font-size:13px;color:var(--fg-dim);border-left:2px solid var(--orange);padding:4px 0 4px 12px;line-height:1.5}
-.ach-strip .a-item b{color:var(--orange)}
-
-/* contact */
-.contact-obj{margin-top:22px;background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:8px 22px}
-.contact-line{display:flex;gap:10px;font-size:15px;padding:11px 0;border-bottom:1px solid var(--border);align-items:center}
-.contact-line:last-child{border-bottom:none}
-.contact-key{color:var(--blue);flex:none;width:90px}
-.contact-line a{color:var(--yellow)}
-.contact-line a:hover{color:var(--green)}
-
-/* status bar */
-.statusbar{flex:none;height:26px;background:var(--blue);color:var(--bg-2);display:flex;align-items:center;padding:0 14px;font-size:11.5px;gap:16px;font-weight:600}
-.statusbar .right{margin-left:auto;display:flex;gap:16px}
-
-@media (max-width:820px){
-  .ide{flex-direction:column;height:auto;min-height:100vh}
-  .sidebar{width:100%;flex-direction:row;overflow-x:auto;padding:10px;align-items:center;gap:4px;border-right:none;border-bottom:1px solid var(--border)}
-  .sidebar-title,.sidebar-folder{display:none}
-  .file-list{flex-direction:row}
-  .file-row{padding:8px 12px;border-left:none;border-bottom:2px solid transparent;white-space:nowrap}
-  .file-row.active{border-left:none;border-bottom-color:var(--blue)}
-  .sidebar-footer{margin-top:0;padding:0 0 0 8px;border-top:none;flex:none}
-  .resume-row{white-space:nowrap}
-  .job-period{display:none}
-  .pane{padding:20px 16px 60px}
-  .run-btn{padding:6px 10px;font-size:11.5px;margin:5px 8px}
-  .actions-row{flex-direction:column;align-items:stretch}
-  .skill-row{grid-template-columns:14px 100px 1fr 36px;gap:8px}
-  .fact-line{flex-wrap:wrap}
-  .contact-key{width:70px}
-  .titlebar span{display:none}
-}
-@media (max-width:480px){
-  .console{padding:14px 14px}
-  .console-line{font-size:13px}
-  .job-head{flex-wrap:wrap}
-  .job-tag{margin-left:0}
-  .job-body{padding-left:26px}
-}
-</style>
-</helmet>
-
-<div class="ide">
-  <aside class="sidebar">
-    <p class="sidebar-title">Explorer</p>
-    <p class="sidebar-folder">▾ 📁 sauraabh-mishra</p>
-    <ul class="file-list">
-      <sc-for list="{{ files }}" as="f" hint-placeholder-count="7">
-        <li class="{{ f.rowClass }}" onClick="{{ f.onClick }}">
-          <span class="file-dot" style="background:{{ f.color }}"></span>
-          {{ f.label }}
-        </li>
-      </sc-for>
-    </ul>
-    <div class="sidebar-footer">
-      <div class="resume-row" onClick="{{ downloadResume }}">
-        <span class="file-dot" style="background:var(--fg-dim)"></span>
-        resume.pdf
-      </div>
+  <!-- Title bar -->
+  <header class="titlebar" role="banner">
+    <div class="traffic-lights" aria-hidden="true">
+      <span class="dot dot-red"></span>
+      <span class="dot dot-yellow"></span>
+      <span class="dot dot-green"></span>
     </div>
-  </aside>
+    <button type="button" class="hamburger" id="hamburger" aria-label="Toggle explorer">
+      <svg width="18" height="18" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"></path></svg>
+    </button>
+    <h1 class="titlebar-title">sauraabh-mishra — portfolio</h1>
+    <div class="titlebar-spacer"></div>
+    <button type="button" class="titlebar-search" id="palette-trigger" aria-label="Open command palette (Ctrl/Cmd+K)" title="Search files & commands (Ctrl/Cmd+K)">
+      <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M229.66,218.34,179.6,168.28a88.21,88.21,0,1,0-11.32,11.32l50.06,50.06a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path></svg>
+    </button>
+  </header>
 
-  <div class="editor-col">
-    <div class="titlebar">
-      <div class="dots">
-        <span class="dot" style="background:#ff5f56"></span>
-        <span class="dot" style="background:#ffbd2e"></span>
-        <span class="dot" style="background:#27c93f"></span>
+  <div class="ide-body">
+
+    <!-- Activity bar -->
+    <nav class="activitybar" aria-label="Primary">
+      <button type="button" class="act-icon act-icon-active" id="act-explorer" aria-label="Explorer" aria-pressed="true" title="Explorer">
+        <svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M216,72H130.67L102.94,51.2a8,8,0,0,0-4.8-1.6H40A16,16,0,0,0,24,65.6V192.4A15.65,15.65,0,0,0,39.65,208H216.31A15.75,15.75,0,0,0,232,192.25V88A16,16,0,0,0,216,72ZM40,65.6H98.13l16,12H40ZM216,192H40V93.6L98.13,93.6,120,109.6a8,8,0,0,0,4.67,1.5H216Z"></path></svg>
+      </button>
+      <a class="act-icon" href="https://github.com/CosmicSaaurabh" target="_blank" rel="noopener" aria-label="GitHub profile" title="GitHub">
+        <svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M128,24A104,104,0,0,0,94.36,224.65c5.2.95,7.1-2.26,7.1-5s-.1-18.15-.15-32.94c-28.9,6.29-35-13.94-35-13.94-4.73-12-11.55-15.21-11.55-15.21-9.43-6.45.72-6.32.72-6.32,10.44.73,15.94,10.72,15.94,10.72,9.27,15.88,24.32,11.3,30.25,8.64.94-6.72,3.63-11.3,6.6-13.9-23.08-2.62-47.34-11.54-47.34-51.35,0-11.34,4-20.61,10.7-27.87-1.08-2.63-4.64-13.21,1-27.55,0,0,8.75-2.8,28.66,10.65a98.5,98.5,0,0,1,52.2,0c19.9-13.45,28.64-10.65,28.64-10.65,5.65,14.34,2.1,24.92,1,27.55,6.66,7.26,10.68,16.53,10.68,27.87,0,39.91-24.3,48.7-47.46,51.28,3.73,3.21,7.06,9.55,7.06,19.25,0,13.9-.12,25.1-.12,28.53,0,2.78,1.87,6,7.16,5A104,104,0,0,0,128,24Z"></path></svg>
+      </a>
+      <a class="act-icon" href="https://www.linkedin.com/in/2bsaurabh/" target="_blank" rel="noopener" aria-label="LinkedIn profile" title="LinkedIn">
+        <svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M216,24H40A16,16,0,0,0,24,40V216a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V40A16,16,0,0,0,216,24ZM96,176a8,8,0,0,1-16,0V112a8,8,0,0,1,16,0Zm-8-80a12,12,0,1,1,12-12A12,12,0,0,1,88,96Zm96,80a8,8,0,0,1-16,0V140a20,20,0,0,0-40,0v36a8,8,0,0,1-16,0V112a8,8,0,0,1,15.79-1.78A36,36,0,0,1,184,140Z"></path></svg>
+      </a>
+      <a class="act-icon" href="https://mail.google.com/mail/?view=cm&fs=1&to=swe.saurabh.mishra@gmail.com" target="_blank" rel="noopener" aria-label="Email me via Gmail" title="Email">
+        <svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48Zm-96,85.15L52.57,64H203.43ZM98.71,128,40,181.81V74.19Zm11.84,10.85,12.51,11.42a8,8,0,0,0,10.88,0l12.51-11.42L207.43,192H48.57Zm46.74-10.85L216,74.18V181.82Z"></path></svg>
+      </a>
+      <a class="act-icon" href="tel:+916393783010" id="act-call" aria-label="Call me" title="Call — copies number if dialing isn't supported">
+        <svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M222.37,158.46l-47.11-21.11-.13-.06a16,16,0,0,0-15.17,1.4,8.12,8.12,0,0,0-.75.56L134.87,160c-15.42-7.49-31.34-23.29-38.83-38.51l20.78-24.71c.2-.24.39-.49.57-.75a16,16,0,0,0,1.32-15.06l0-.12L97.54,33.64a16,16,0,0,0-16.62-9.52A56.26,56.26,0,0,0,32,80c0,79.4,64.6,144,144,144a56.26,56.26,0,0,0,55.88-48.92A16,16,0,0,0,222.37,158.46Z"></path></svg>
+      </a>
+      <span class="toast" id="call-toast" role="status" aria-live="polite"></span>
+      <a class="act-icon" id="act-download" href="assets/Sauraabh_Mishra_Resume.pdf" download aria-label="Download résumé" title="Download résumé">
+        <svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224,152v56a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V152a8,8,0,0,1,16,0v56H208V152a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,132.69V40a8,8,0,0,0-16,0v92.69L93.66,106.34a8,8,0,0,0-11.32,11.32Z"></path></svg>
+      </a>
+      <button type="button" class="act-icon" id="act-terminal" aria-label="Toggle terminal" aria-pressed="false" title="Terminal (Ctrl/Cmd+`)">
+        <svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M208,40H48A16,16,0,0,0,32,56V200a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V56A16,16,0,0,0,208,40Zm0,160H48V56H208V200ZM77.66,90.34a8,8,0,0,1,11.32-11.32l32,32a8,8,0,0,1,0,11.32l-32,32a8,8,0,0,1-11.32-11.32L104,116,77.66,90.34ZM168,152h-48a8,8,0,0,1,0-16h48a8,8,0,0,1,0,16Z"></path></svg>
+      </button>
+      <div class="act-spacer"></div>
+      <button type="button" class="act-icon" id="act-settings" aria-label="Settings" title="Settings" aria-haspopup="menu" aria-expanded="false">
+        <svg width="22" height="22" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm88-29.84q.06-2.16,0-4.32l14.92-18.64a8,8,0,0,0,1.48-7.06,107.6,107.6,0,0,0-10.88-26.25,8,8,0,0,0-6-4L196,72.61q-1.56-1.56-3.2-3L189.51,50a8,8,0,0,0-4-6,107.71,107.71,0,0,0-26.25-10.88,8,8,0,0,0-7.06,1.48L133.6,49.5q-2.16-.06-4.32,0L110.64,34.58a8,8,0,0,0-7.06-1.48A107.6,107.6,0,0,0,77.33,44,8,8,0,0,0,73.3,50L60.61,64q-1.56,1.56-3,3.2L34.58,110.64a8,8,0,0,0-1.48,7.06,107.71,107.71,0,0,0,10.88,26.25,8,8,0,0,0,6,4l23.53,3.29q1.56,1.56,3.2,3L79.6,177.6a8,8,0,0,0,1.48,7.06A107.6,107.6,0,0,0,107.33,195,8,8,0,0,0,113.39,193l18.64-14.92q2.16.06,4.32,0l18.64,14.92a8,8,0,0,0,7.06,1.48,107.71,107.71,0,0,0,26.25-10.88,8,8,0,0,0,4-6l3.29-23.53q1.56-1.56,3-3.2l23.53-3.29a8,8,0,0,0,6-4,107.6,107.6,0,0,0,10.88-26.25,8,8,0,0,0-1.48-7.06Z" opacity="0"></path><path d="M128,88a40,40,0,1,0,40,40A40,40,0,0,0,128,88Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,128,152Zm88-24a87.9,87.9,0,0,0-1-13l14.34-11.5a8,8,0,0,0,1.87-10.24l-16-27.7a8,8,0,0,0-9.66-3.55l-16.9,6a88.4,88.4,0,0,0-22.55-13l-2.54-17.86A8,8,0,0,0,155.75,44h-32a8,8,0,0,0-7.9,6.79L113.31,68.65a88.4,88.4,0,0,0-22.55,13l-16.9-6a8,8,0,0,0-9.66,3.55l-16,27.7a8,8,0,0,0,1.87,10.24L64.41,128a87.9,87.9,0,0,0,0,26L50.07,166.5a8,8,0,0,0-1.87,10.24l16,27.7a8,8,0,0,0,9.66,3.55l16.9-6a88.4,88.4,0,0,0,22.55,13l2.54,17.86A8,8,0,0,0,123.75,240h32a8,8,0,0,0,7.9-6.79l2.54-17.86a88.4,88.4,0,0,0,22.55-13l16.9,6a8,8,0,0,0,9.66-3.55l16-27.7a8,8,0,0,0-1.87-10.24L215,141A87.9,87.9,0,0,0,216,128Z"></path></svg>
+      </button>
+      <div class="theme-menu" id="theme-menu" role="menu" aria-label="Editor theme" hidden>
+        <button type="button" class="theme-menu-item" role="menuitemradio" data-theme-id="monokai" aria-checked="true">Monokai</button>
+        <button type="button" class="theme-menu-item" role="menuitemradio" data-theme-id="dracula" aria-checked="false">Dracula</button>
+        <button type="button" class="theme-menu-item" role="menuitemradio" data-theme-id="solarized-dark" aria-checked="false">Solarized Dark</button>
+        <button type="button" class="theme-menu-item" role="menuitemradio" data-theme-id="github-light" aria-checked="false">GitHub Light</button>
       </div>
-      <span style="font-size:12.5px;color:var(--fg-dim)">sauraabh-mishra — {{ activeFileLabel }}</span>
-    </div>
+    </nav>
 
-    <div class="tabbar">
-      <sc-for list="{{ openTabsData }}" as="t" hint-placeholder-count="1">
-        <div class="{{ t.tabClass }}" onClick="{{ t.onClick }}">
-          <span class="file-dot" style="background:{{ t.color }}"></span>
-          {{ t.label }}
-          <sc-if value="{{ t.closable }}" hint-placeholder-val="{{ false }}">
-            <span class="x" onClick="{{ t.onClose }}">✕</span>
-          </sc-if>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar" aria-label="File explorer">
+      <p class="sidebar-title">Explorer</p>
+      <div class="sidebar-tree" role="tree" aria-label="Project files" id="file-tree">
+        <p class="tree-placeholder">Tree loads in increment 2 …</p>
+      </div>
+    </aside>
+
+    <!-- Editor column -->
+    <div class="editor-col">
+      <div class="tabbar" role="tablist" aria-label="Open files" id="tabbar">
+        <p class="tab-placeholder">Tabs load in increment 2 …</p>
+      </div>
+
+      <main class="pane" id="editor-pane">
+        <div class="welcome" id="welcome-view">
+          <div class="welcome-mark" aria-hidden="true">SM</div>
+          <h2 class="welcome-title">Sauraabh Mishra</h2>
+          <p class="welcome-sub">Backend Engineer — Distributed Systems</p>
+          <div class="welcome-hints">
+            <p><kbd>Ctrl/Cmd</kbd> + <kbd>W</kbd> — close active tab</p>
+            <p><kbd>Ctrl/Cmd</kbd> + <kbd>Alt</kbd> + <kbd>Tab</kbd> — cycle open tabs</p>
+            <p><kbd>Ctrl/Cmd</kbd> + <kbd>`</kbd> — toggle terminal · try <code>help</code></p>
+          </div>
         </div>
-      </sc-for>
-      <button type="button" class="run-btn" onClick="{{ runProgram }}">▶ Run main.sauraabh</button>
-    </div>
+      </main>
 
-    <div class="pane">
-      <div class="code">
+      <div class="minimap" id="minimap" aria-hidden="true"><div class="minimap-viewport" id="minimap-viewport"></div></div>
 
-        <sc-if value="{{ isMain }}" hint-placeholder-val="{{ true }}">
-          <div>
-            <div class="ln-row"><span class="ln">1</span><span class="ln-content c-comment">// main.sauraabh — run to say hello</span></div>
-            <div class="blank-row"></div>
-            <div class="ln-row"><span class="ln">2</span><span class="ln-content"><span class="c-key">const</span> <span class="c-plain">sauraabh</span> = {</span></div>
-            <div class="ln-row"><span class="ln">3</span><span class="ln-content">&nbsp;&nbsp;<span class="c-param">name</span>: <span class="c-str">"Sauraabh Mishra"</span>,</span></div>
-            <div class="ln-row"><span class="ln">4</span><span class="ln-content">&nbsp;&nbsp;<span class="c-param">role</span>: <span class="c-str">"Backend Engineer — Distributed Systems"</span>,</span></div>
-            <div class="ln-row"><span class="ln">5</span><span class="ln-content">&nbsp;&nbsp;<span class="c-param">based</span>: <span class="c-str">"Bangalore, India"</span>,</span></div>
-            <div class="ln-row"><span class="ln">6</span><span class="ln-content">};</span></div>
-            <div class="blank-row"></div>
-
-            <div class="hero-status"><span class="dot-live"></span>open to backend &amp; platform engineering roles</div>
-
-            <div class="ln-row"><span class="ln">7</span><span class="ln-content"><span class="c-key">function</span> <span class="c-fn">introduce</span>() {</span></div>
-
-            <div class="console">
-              <div class="console-head">▶ console output</div>
-              <div class="console-line"><span class="arrow">›</span>{{ typedLine1 }}</div>
-              <div class="console-line"><span class="arrow">›</span>{{ typedLine2 }}</div>
-              <div class="console-line"><span class="arrow">›</span>{{ typedLine3 }}<span class="cursor" style="{{ cursorStyle }}"></span></div>
-            </div>
-
-            <div class="ln-row" style="margin-top:6px"><span class="ln">11</span><span class="ln-content">}</span></div>
-
-            <div class="actions-row">
-              <a class="act-btn primary" href="assets/Sauraabh_Mishra_Resume.pdf" download><span class="p">&gt;</span> Download résumé</a>
-              <a class="act-btn" href="https://github.com/CosmicSaaurabh" target="_blank" rel="noopener"><span class="p">&gt;</span> View GitHub</a>
-              <a class="act-btn" href="https://www.linkedin.com/in/2bsaurabh/" target="_blank" rel="noopener"><span class="p">&gt;</span> Connect on LinkedIn</a>
-            </div>
+      <div class="term-panel" id="term-panel" hidden>
+        <div class="term-resizer" id="term-resizer" role="separator" aria-orientation="horizontal" aria-label="Resize terminal (arrow keys to adjust)" tabindex="0"></div>
+        <div class="term-header">
+          <span class="term-title">TERMINAL</span>
+          <div class="term-header-actions">
+            <button type="button" class="term-btn" id="term-maximize" aria-label="Maximize terminal" aria-pressed="false">▢</button>
+            <button type="button" class="term-btn" id="term-close" aria-label="Close terminal">×</button>
           </div>
-        </sc-if>
-
-        <sc-if value="{{ isAbout }}" hint-placeholder-val="{{ false }}">
-          <div>
-            <div class="ln-row"><span class="ln">1</span><span class="ln-content c-comment">/**</span></div>
-            <div class="ln-row"><span class="ln">2</span><span class="ln-content c-comment">&nbsp;* about.sauraabh</span></div>
-            <div class="ln-row"><span class="ln">3</span><span class="ln-content c-comment">&nbsp;*/</span></div>
-            <div class="blank-row"></div>
-            <div class="ln-row"><span class="ln">4</span><span class="ln-content c-str">"I'm a backend engineer who likes the unglamorous parts: making a system survive a bad day. At Capslock Marketplaces I own backend services for an app serving 10M+ users — re-architecting request handling around Kafka so peak traffic stops piling up behind a blocking call."</span></div>
-            <div class="blank-row"></div>
-            <div class="ln-row"><span class="ln">5</span><span class="ln-content c-str">"Before that, at Couchbase, I spent three years inside the SDKs that enterprises trust to talk to their databases without losing data — heuristics that hold up under real network conditions, telemetry that tells you what actually happened, tests that catch failure before a customer does."</span></div>
-            <div class="blank-row"></div>
-            <div class="ln-row"><span class="ln">6</span><span class="ln-content c-str">"My distributed-systems knowledge isn't just theory — it's Raft consensus and replica routing shipped inside Couchbase SDKs that enterprises run in production, and a Postgres-backed durable task queue I built from scratch that survives worker failure with zero duplicate execution."</span></div>
-            <div class="blank-row"></div>
-            <div class="ln-row"><span class="ln">7</span><span class="ln-content c-str">"I'm genuinely restless about learning: I'm currently deepening my AI/ML and generative AI foundations through a part-time M.Sc. at BITS Pilani, while shipping backend systems by day — new tech doesn't scare me, it's the whole reason I do this."</span></div>
-
-            <div class="fact-obj">
-              <div class="fact-line"><span class="fact-key">experience:</span> <span class="fact-val">"4+ years"</span></div>
-              <div class="fact-line"><span class="fact-key">usersServed:</span> <span class="fact-val">"10M+"</span></div>
-              <div class="fact-line"><span class="fact-key">sdkThroughput:</span> <span class="fact-val">"~10K ops/sec, zero failures"</span></div>
-              <div class="fact-line"><span class="fact-key">problemsSolved:</span> <span class="c-num">2000</span>+</div>
-              <div class="fact-line"><span class="fact-key">currentlyLearning:</span> <span class="fact-val">"AI/ML, GenAI — M.Sc. @ BITS Pilani"</span></div>
-            </div>
+        </div>
+        <div class="term-body">
+          <div class="term-output" id="term-output" role="log" aria-live="polite" aria-label="Terminal output"></div>
+          <div class="term-inputrow">
+            <span class="term-prompt" aria-hidden="true"><span class="term-user">saurabh@portfolio</span><span class="term-plain">:</span><span class="term-path">~$</span></span>
+            <label class="sr-only" for="term-input">Terminal command input</label>
+            <input type="text" class="term-input" id="term-input" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
           </div>
-        </sc-if>
-
-        <sc-if value="{{ isExperience }}" hint-placeholder-val="{{ false }}">
-          <div>
-            <div class="ln-row" style="margin-bottom:16px"><span class="ln">1</span><span class="ln-content c-comment">// experience.sauraabh — click a role to expand contributions</span></div>
-            <sc-for list="{{ jobs }}" as="job" hint-placeholder-count="4">
-              <div class="job-card">
-                <div class="job-head" onClick="{{ job.toggle }}">
-                  <span class="{{ job.caretClass }}">▸</span>
-                  <span class="job-logo" style="background:{{ job.logoBg }}">
-                    <sc-if value="{{ job.isCouchbase }}" hint-placeholder-val="{{ false }}">
-                      <img src="https://cdn.simpleicons.org/couchbase" alt="Couchbase" style="width:16px;height:16px" onerror="this.style.display='none';if(this.nextElementSibling){this.nextElementSibling.style.display='inline'}">
-                    </sc-if>
-                    <span style="display:{{ job.logoFallbackDisplay }};color:{{ job.logoFg }}">{{ job.logoText }}</span>
-                  </span>
-                  <span class="job-role">{{ job.role }}</span>
-                  <span class="job-company">@ {{ job.company }}</span>
-                  <sc-if value="{{ job.showTag }}" hint-placeholder-val="{{ false }}">
-                    <span class="job-tag">{{ job.tag }}</span>
-                  </sc-if>
-                  <span class="job-period">{{ job.period }}</span>
-                </div>
-                <sc-if value="{{ job.expanded }}" hint-placeholder-val="{{ false }}">
-                  <ul class="job-body">
-                    <sc-for list="{{ job.bullets }}" as="b" hint-placeholder-count="4">
-                      <li>{{ b }}</li>
-                    </sc-for>
-                  </ul>
-                </sc-if>
-              </div>
-            </sc-for>
-          </div>
-        </sc-if>
-
-        <sc-if value="{{ isEducation }}" hint-placeholder-val="{{ false }}">
-          <div>
-            <div class="ln-row" style="margin-bottom:16px"><span class="ln">1</span><span class="ln-content c-comment">// education.sauraabh — click an entry to expand</span></div>
-            <sc-for list="{{ education }}" as="e" hint-placeholder-count="3">
-              <div class="job-card">
-                <div class="job-head" onClick="{{ e.toggle }}">
-                  <span class="{{ e.caretClass }}">▸</span>
-                  <span class="job-role">{{ e.level }}</span>
-                  <span class="job-company">@ {{ e.company }}</span>
-                  <sc-if value="{{ e.showTag }}" hint-placeholder-val="{{ false }}">
-                    <span class="job-tag">{{ e.tag }}</span>
-                  </sc-if>
-                  <span class="job-period">{{ e.period }}</span>
-                </div>
-                <sc-if value="{{ e.expanded }}" hint-placeholder-val="{{ false }}">
-                  <ul class="job-body">
-                    <sc-for list="{{ e.bullets }}" as="b" hint-placeholder-count="2">
-                      <li>{{ b }}</li>
-                    </sc-for>
-                  </ul>
-                </sc-if>
-              </div>
-            </sc-for>
-          </div>
-        </sc-if>
-
-        <sc-if value="{{ isProjects }}" hint-placeholder-val="{{ false }}">
-          <div>
-            <div class="ln-row"><span class="ln">1</span><span class="ln-content c-comment">// projects.sauraabh — opens full write-up in a new tab</span></div>
-            <div class="proj-grid">
-              <sc-for list="{{ projects }}" as="p" hint-placeholder-count="2">
-                <a class="proj-card" href="{{ p.github }}" target="_blank" rel="noopener">
-                  <div class="proj-file">📁 {{ p.id }}/</div>
-                  <h3 class="proj-title">{{ p.title }}</h3>
-                  <p class="proj-sub">{{ p.subtitle }}</p>
-                  <p class="proj-summary">{{ p.summary }}</p>
-                  <div class="proj-tags">
-                    <sc-for list="{{ p.tagsShown }}" as="t" hint-placeholder-count="4">
-                      <span class="proj-tag">{{ t }}</span>
-                    </sc-for>
-                  </div>
-                </a>
-              </sc-for>
-            </div>
-          </div>
-        </sc-if>
-
-        <sc-if value="{{ isSkills }}" hint-placeholder-val="{{ false }}">
-          <div>
-            <div class="ln-row" style="margin-bottom:8px"><span class="ln">1</span><span class="ln-content c-comment">// skills.sauraabh — click a skill for level & where I've used it</span></div>
-            <sc-for list="{{ skillGroups }}" as="g" hint-placeholder-count="4">
-              <div class="skill-group">
-                <p class="skill-group-title">{{ g.name }}</p>
-                <sc-for list="{{ g.items }}" as="s" hint-placeholder-count="4">
-                  <div class="skill-item">
-                    <div class="skill-row" onClick="{{ s.toggle }}">
-                      <span class="{{ s.caretClass }}">▸</span>
-                      <span class="skill-name">{{ s.name }}</span>
-                      <span class="{{ s.meterClass }}"><span style="color:{{ s.color }}">{{ s.filledStr }}</span><span class="empty">{{ s.emptyStr }}</span></span>
-                      <span class="skill-tier" style="background:{{ s.tierBg }};color:{{ s.color }}">{{ s.tierLabel }} · {{ s.level }}%</span>
-                    </div>
-                    <sc-if value="{{ s.expanded }}" hint-placeholder-val="{{ false }}">
-                      <div class="skill-detail">
-                        {{ s.blurb }}
-                        <div class="skill-usedat-label">▹ Learned &amp; used at</div>
-                        <div class="skill-usedat">
-                          <sc-for list="{{ s.usedAt }}" as="u" hint-placeholder-count="2">
-                            <span>{{ u }}</span>
-                          </sc-for>
-                        </div>
-                      </div>
-                    </sc-if>
-                  </div>
-                </sc-for>
-              </div>
-            </sc-for>
-          </div>
-        </sc-if>
-
-        <sc-if value="{{ isProfiles }}" hint-placeholder-val="{{ false }}">
-          <div>
-            <div class="ln-row" style="margin-bottom:8px"><span class="ln">1</span><span class="ln-content c-comment">// profiles.sauraabh — competitive programming</span></div>
-            <div class="cp-grid">
-              <sc-for list="{{ codingProfiles }}" as="cp" hint-placeholder-count="6">
-                <a class="cp-card" href="{{ cp.url }}" target="_blank" rel="noopener">
-                  <div class="cp-top">
-                    <sc-if value="{{ cp.icon }}" hint-placeholder-val="{{ true }}">
-                      <img class="cp-icon" src="{{ cp.icon }}" alt="{{ cp.name }}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-                    </sc-if>
-                    <span class="cp-icon" style="display:{{ cp.fallbackDisplay }};align-items:center;justify-content:center;background:{{ cp.fallbackBg }};border-radius:6px;color:{{ cp.fallbackFg }};font-size:11px;font-weight:700">{{ cp.initials }}</span>
-                    <span class="cp-name">{{ cp.name }}</span>
-                  </div>
-                  <p class="cp-stat">{{ cp.statValue }}</p>
-                  <p class="cp-label">{{ cp.statLabel }}</p>
-                  <div class="cp-bar"><div class="cp-bar-fill" style="width:{{ cp.barWidth }}"></div></div>
-                </a>
-              </sc-for>
-            </div>
-            <div class="ach-strip">
-              <div class="a-item"><b>663rd</b> globally among 25,000+ in a Codeforces contest</div>
-              <div class="a-item"><b>1st place</b>, Turing Test 6 (300+ teams)</div>
-              <div class="a-item"><b>Finalist</b>, TechGig Code Gladiators 2021</div>
-              <div class="a-item"><b>2,000+</b> problems solved across platforms</div>
-            </div>
-          </div>
-        </sc-if>
-
-        <sc-if value="{{ isContact }}" hint-placeholder-val="{{ false }}">
-          <div>
-            <div class="ln-row" style="margin-bottom:8px"><span class="ln">1</span><span class="ln-content c-comment">// contact.sauraabh — export default</span></div>
-            <div class="contact-obj">
-              <div class="contact-line"><span class="contact-key">email:</span> <a href="mailto:swe.saurabh.mishra@gmail.com">swe.saurabh.mishra@gmail.com</a></div>
-              <div class="contact-line"><span class="contact-key">linkedin:</span> <a href="https://www.linkedin.com/in/2bsaurabh/" target="_blank" rel="noopener">linkedin.com/in/2bsaurabh</a></div>
-              <div class="contact-line"><span class="contact-key">github:</span> <a href="https://github.com/CosmicSaaurabh" target="_blank" rel="noopener">github.com/CosmicSaaurabh</a></div>
-              <div class="contact-line"><span class="contact-key">phone:</span> <a href="tel:+916393783010">+91 6393783010</a></div>
-            </div>
-          </div>
-        </sc-if>
-
-      </div>
-    </div>
-
-    <div class="statusbar">
-      <span>⎇ main</span>
-      <span>{{ activeFileLabel }}</span>
-      <div class="right">
-        <span>UTF-8</span>
-        <span>LF</span>
-        <span>Sauraabh Lang</span>
-        <span>● No Problems</span>
+        </div>
       </div>
     </div>
   </div>
+
+  <div class="palette-backdrop" id="palette-backdrop" hidden>
+    <div class="palette" id="palette" role="dialog" aria-modal="true" aria-label="Command palette">
+      <button type="button" class="palette-close" id="palette-close" aria-label="Close command palette">×</button>
+      <div class="palette-inputrow">
+        <svg width="16" height="16" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" class="palette-icon"><path d="M229.66,218.34,179.6,168.28a88.21,88.21,0,1,0-11.32,11.32l50.06,50.06a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path></svg>
+        <label class="sr-only" for="palette-input">Search files, or type &gt; for commands</label>
+        <input type="text" id="palette-input" role="combobox" aria-expanded="false" aria-controls="palette-list" aria-activedescendant="" aria-autocomplete="list" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Search files or type &gt; for commands…">
+      </div>
+      <ul class="palette-list" id="palette-list" role="listbox" aria-label="Results"></ul>
+      <p class="sr-only" id="palette-status" role="status" aria-live="polite"></p>
+    </div>
+  </div>
+
+  <div class="palette-backdrop" id="shortcuts-backdrop" hidden>
+    <div class="palette shortcuts-dialog" id="shortcuts-dialog" role="dialog" aria-modal="true" aria-labelledby="shortcuts-title">
+      <button type="button" class="palette-close" id="shortcuts-close" aria-label="Close shortcuts">×</button>
+      <h2 id="shortcuts-title" class="shortcuts-title">Keyboard shortcuts</h2>
+      <div class="shortcuts-body">
+        <section class="shortcuts-group">
+          <h3>Global</h3>
+          <p><kbd>Ctrl/Cmd</kbd> + <kbd>K</kbd> — command palette</p>
+          <p><kbd>Ctrl/Cmd</kbd> + <kbd>`</kbd> — toggle terminal</p>
+          <p><kbd>Ctrl/Cmd</kbd> + <kbd>W</kbd> — close active tab</p>
+          <p><kbd>Ctrl/Cmd</kbd> + <kbd>Alt</kbd> + <kbd>Tab</kbd> — cycle open tabs</p>
+          <p><kbd>?</kbd> — this help</p>
+          <p><kbd>Esc</kbd> — close palette / menu / overlay</p>
+        </section>
+        <section class="shortcuts-group">
+          <h3>Palette</h3>
+          <p><kbd>↑</kbd> <kbd>↓</kbd> — navigate results</p>
+          <p><kbd>Enter</kbd> — open selection</p>
+          <p><kbd>&gt;</kbd> — switch to command mode</p>
+        </section>
+        <section class="shortcuts-group">
+          <h3>Terminal</h3>
+          <p><kbd>↑</kbd> <kbd>↓</kbd> — command history</p>
+          <p><kbd>Tab</kbd> — completion (double-Tab lists candidates)</p>
+          <p><kbd>Ctrl</kbd> + <kbd>L</kbd> — clear</p>
+          <p><kbd>Ctrl</kbd> + <kbd>C</kbd> — cancel current line</p>
+        </section>
+        <section class="shortcuts-group">
+          <h3>Graph</h3>
+          <p><kbd>Enter</kbd>/<kbd>Space</kbd> — open the role for a commit row</p>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- Status bar -->
+  <footer class="statusbar" role="contentinfo">
+    <span class="sb-item"><svg width="13" height="13" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M104,40a24,24,0,1,0-32,22.62V193.38a24,24,0,1,0,16,0V143.32A47.9,47.9,0,0,0,112,152h34.83A48,48,0,1,0,192,104a47.7,47.7,0,0,0-16.42,2.9L153.1,84.42A47.7,47.7,0,0,0,156,68,24,24,0,1,0,104,40Zm88,88a32,32,0,1,1-32-32A32,32,0,0,1,192,128Z"></path></svg> main</span>
+    <span class="sb-item">0 <svg width="12" height="12" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm-8-80V80a8,8,0,0,1,16,0v56a8,8,0,0,1-16,0Zm20,36a12,12,0,1,1-12-12A12,12,0,0,1,140,172Z"></path></svg> 0</span>
+    <div class="sb-right">
+      <span class="sb-item" id="sb-filetype">Plain Text</span>
+      <span class="sb-item">UTF-8</span>
+      <button type="button" class="sb-item sb-theme-btn" id="sb-theme">Monokai</button>
+    </div>
+  </footer>
 </div>
 
-</x-dc>
-<script type="text/x-dc" data-dc-script>
-const FILES = [
-  { id: "main", label: "main.sauraabh", color: "var(--blue)" },
-  { id: "about", label: "about.sauraabh", color: "var(--pink)" },
-  { id: "experience", label: "experience.sauraabh", color: "var(--green)" },
-  { id: "education", label: "education.sauraabh", color: "var(--teal)" },
-  { id: "projects", label: "projects.sauraabh", color: "var(--yellow)" },
-  { id: "skills", label: "skills.sauraabh", color: "var(--purple)" },
-  { id: "profiles", label: "profiles.sauraabh", color: "var(--orange)" },
-  { id: "contact", label: "contact.sauraabh", color: "var(--violet)" },
-];
-
-const LINE1 = "Hi, I'm Sauraabh Mishra — backend engineer for systems that don't fall over.";
-const LINE2 = "I scale backend infra for 10M+ users at Capslock Marketplaces; before that, 3+ years deep in Couchbase's SDKs.";
-const LINE3 = "Off the clock: 2,000+ competitive programming problems solved across 6 platforms.";
-
-class Component extends DCLogic {
-  state = {
-    activeFile: "main",
-    openTabs: ["main"],
-    expandedJobs: { 0: true },
-    expandedEdu: { 0: true },
-    expandedSkills: {},
-    animated: { skills: false, profiles: false },
-    typeProgress: 0,
-    projectsData: [],
-  };
-
-  componentDidMount() {
-    import("./projects-data.js").then((mod) => this.setState({ projectsData: mod.default || [] }));
-    this.startTyping();
-  }
-
-  startTyping() {
-    clearInterval(this._typer);
-    const total = LINE1.length + LINE2.length + LINE3.length;
-    this._typer = setInterval(() => {
-      this.setState((s) => {
-        if (s.typeProgress >= total) {
-          clearInterval(this._typer);
-          return null;
-        }
-        return { typeProgress: s.typeProgress + 2 };
-      });
-    }, 20);
-  }
-
-  runProgram = () => {
-    this.openFile("main");
-    this.setState({ typeProgress: 0 }, () => this.startTyping());
-  };
-
-  componentWillUnmount() {
-    clearInterval(this._typer);
-    clearTimeout(this._animTimer);
-  }
-
-  openFile = (id) => {
-    this.setState((s) => ({
-      activeFile: id,
-      openTabs: s.openTabs.includes(id) ? s.openTabs : [...s.openTabs, id],
-    }));
-    if (id === "skills" || id === "profiles") {
-      this.setState((s) => ({ animated: { ...s.animated, [id]: false } }));
-      clearTimeout(this._animTimer);
-      this._animTimer = setTimeout(() => {
-        this.setState((s) => ({ animated: { ...s.animated, [id]: true } }));
-      }, 60);
-    }
-  };
-
-  closeTab = (id, e) => {
-    e.stopPropagation();
-    this.setState((s) => {
-      const tabs = s.openTabs.filter((t) => t !== id);
-      let active = s.activeFile;
-      if (active === id) active = tabs[tabs.length - 1] || "main";
-      return { openTabs: tabs.length ? tabs : ["main"], activeFile: active };
-    });
-  };
-
-  downloadResume = () => {
-    const a = document.createElement("a");
-    a.href = "assets/Sauraabh_Mishra_Resume.pdf";
-    a.download = "Sauraabh_Mishra_Resume.pdf";
-    a.click();
-  };
-
-  toggleJob = (i) => {
-    this.setState((s) => ({ expandedJobs: { ...s.expandedJobs, [i]: !s.expandedJobs[i] } }));
-  };
-
-  toggleEdu = (i) => {
-    this.setState((s) => ({ expandedEdu: { ...s.expandedEdu, [i]: !s.expandedEdu[i] } }));
-  };
-
-  toggleSkill = (key) => {
-    this.setState((s) => ({ expandedSkills: { ...s.expandedSkills, [key]: !s.expandedSkills[key] } }));
-  };
-
-  renderVals() {
-    const files = FILES.map((f) => ({
-      ...f,
-      rowClass: "file-row" + (this.state.activeFile === f.id ? " active" : ""),
-      onClick: () => this.openFile(f.id),
-    }));
-
-    const openTabsData = this.state.openTabs.map((id) => {
-      const f = FILES.find((x) => x.id === id);
-      return {
-        id,
-        label: f.label,
-        color: f.color,
-        tabClass: "tab" + (this.state.activeFile === id ? " active" : ""),
-        closable: id !== "main",
-        onClick: () => this.openFile(id),
-        onClose: (e) => this.closeTab(id, e),
-      };
-    });
-
-    const activeFileLabel = (FILES.find((f) => f.id === this.state.activeFile) || FILES[0]).label;
-
-    const p = this.state.typeProgress;
-    const l1 = LINE1.slice(0, Math.max(0, Math.min(LINE1.length, p)));
-    const l2 = LINE1.length < p ? LINE2.slice(0, Math.max(0, Math.min(LINE2.length, p - LINE1.length))) : "";
-    const l3 = LINE1.length + LINE2.length < p ? LINE3.slice(0, Math.max(0, Math.min(LINE3.length, p - LINE1.length - LINE2.length))) : "";
-    const done = p >= LINE1.length + LINE2.length + LINE3.length;
-
-    const jobsRaw = [
-      {
-        role: "SDE II", company: "Capslock Marketplaces, Bangalore", period: "Mar 2026 – Present", tag: "Current",
-        logoText: "CM", logoBg: "#2a1f4d", logoFg: "#ae81ff",
-        bullets: [
-          "Own backend for the Voicelcub app — 10M+ users, scalability, async processing, real-time partner analytics.",
-          "Diagnosed a request-pileup from blocking sync calls; re-architected onto Kafka async processing, clearing a peak-load bottleneck.",
-          "Integrated TeleCMI cloud telephony + OTPless auth, powering reliable call connectivity and frictionless partner onboarding.",
-          "Scaled Kafka topic partitions to improve consumer parallelism, cutting consumer lag during traffic spikes.",
-          "Widened Redis caching in front of Postgres, cutting read latency and DB load on high-traffic endpoints.",
-          "Built a live partner analytics dashboard (income, call volume) using Redis sorted sets for real-time rankings.",
-        ],
-      },
-      {
-        role: "Software Engineer II", company: "Couchbase, Bangalore", period: "Aug 2022 – Mar 2026", tag: "Promoted SE → SE II",
-        logoText: "CB", logoBg: "#3a1418", logoFg: "#ea2328", isCouchbase: true,
-        bullets: [
-          "Shipped customer-facing enhancements to Java & .NET SDKs, sustaining ~10K ops/sec with zero failures.",
-          "Redesigned SDK network heuristics and connection resolution under private endpoint deployments, resolving timeout escalations across Kubernetes and multi-cloud environments.",
-          "Eliminated OOM issues via optimized threading, memory management, and event-driven design — cutting customer escalations.",
-          "Designed & built Application Telemetry so SDKs publish runtime metrics for observability and diagnostics.",
-          "Integrated Vector Search into SDKs, enabling similarity search for AI/ML workloads.",
-          "Built Zone-Aware Replica routing, improving data locality and cutting read latency in distributed deployments.",
-          "Fixed critical rebalancing defects: memory leaks and node-targeting bugs under production load.",
-          "Built a custom proxy between SDK and server to intercept, manipulate, and replay requests for resilience testing.",
-        ],
-      },
-      {
-        role: "Software Engineer", company: "Orange Health (Logistics), Bangalore", period: "Jun 2022 – Aug 2022", tag: "",
-        logoText: "OH", logoBg: "#3d2410", logoFg: "#fd971f",
-        bullets: [
-          "Cut field-medic travel distance ~50% via Google Maps API integration and route optimization.",
-          "Designed real-time logistics APIs improving visibility and coordination across stakeholders.",
-        ],
-      },
-      {
-        role: "Software Engineer Intern", company: "InstaAstro, Noida", period: "Feb 2022 – Jun 2022", tag: "",
-        logoText: "IA", logoBg: "#132f3d", logoFg: "#66d9ef",
-        bullets: [
-          "Built backend APIs for core web and mobile features.",
-          "Partnered with frontend + product to translate requirements into scalable backend solutions.",
-        ],
-      },
-      {
-        role: "Django Developer Intern (Volunteer)", company: "Shiksha Sopan, IIT Kanpur", period: "Apr 2022 – May 2022", tag: "Volunteering",
-        logoText: "SS", logoBg: "#2d1f3d", logoFg: "#c792ea",
-        bullets: [
-          "Volunteered as a Django developer supporting Shiksha Sopan's education-access initiatives out of IIT Kanpur.",
-          "Built backend features to support the organization's outreach and program tooling.",
-        ],
-      },
-    ];
-    const jobs = jobsRaw.map((j, i) => ({
-      ...j,
-      showTag: !!j.tag,
-      logoFallbackDisplay: j.isCouchbase ? "none" : "inline",
-      expanded: !!this.state.expandedJobs[i],
-      caretClass: "job-caret" + (this.state.expandedJobs[i] ? " open" : ""),
-      toggle: () => this.toggleJob(i),
-    }));
-
-    const eduRaw = [
-      {
-        level: "M.Sc., Artificial Intelligence & Machine Learning", company: "BITS Pilani (Part-time)", period: "2026 – 2028 (Expected)", tag: "In progress",
-        bullets: [
-          "Coursework spanning machine learning, deep learning, and generative AI while working full-time as a backend engineer.",
-          "Pursuing this to formalize the AI/ML skills I've been building hands-on into rigorous theory — statistics, model architectures, and applied GenAI.",
-        ],
-      },
-      {
-        level: "B.Tech., Computer Science (Information Technology)", company: "ABES Engineering College, Ghaziabad", period: "2018 – 2022", tag: "", link: "https://www.abes.ac.in",
-        bullets: [
-          "Core coursework: Data Structures & Algorithms, Computer Architecture & Organization, DBMS, AI/ML, Java, Web Development, and Software Project Management.",
-          "Graduated with an overall 8.1 CGPA.",
-          "Built the algorithmic foundation that later fed 2,000+ competitive programming problems solved and the systems work at Couchbase.",
-        ],
-      },
-      {
-        level: "Senior Secondary & Secondary (Science — PCM)", company: "MPVM, Allahabad", period: "2016 – 2018", tag: "", link: "https://mpvm.edu.in/index.php",
-        bullets: [
-          "Science stream — Physics, Chemistry, Mathematics.",
-          "10 CGPA in Class X, 84% in Class XII.",
-        ],
-      },
-    ];
-    const education = eduRaw.map((e, i) => ({
-      ...e,
-      showTag: !!e.tag,
-      expanded: !!this.state.expandedEdu[i],
-      caretClass: "job-caret" + (this.state.expandedEdu[i] ? " open" : ""),
-      toggle: () => this.toggleEdu(i),
-    }));
-
-    const projects = (this.state.projectsData || []).map((pr) => ({
-      ...pr,
-      href: `project-detail.html?id=${pr.id}`,
-      tagsShown: pr.tags.slice(0, 4),
-    }));
-
-    const skillColors = ["var(--blue)", "var(--pink)", "var(--green)", "var(--yellow)", "var(--purple)", "var(--orange)"];
-    const skillGroupsRaw = [
-      { name: "Languages", items: [
-        { name: "Java", level: 95, usedAt: ["Couchbase", "Personal projects"], blurb: "Primary language for 3+ years of Couchbase SDK work — concurrency, memory management, JVM performance tuning." },
-        { name: "Go", level: 90, usedAt: ["Capslock Marketplaces", "Distributed KV Store"], blurb: "Coordination layer for Voicelcub backend services and the Raft-based distributed KV store." },
-        { name: ".NET / C#", level: 82, usedAt: ["Couchbase", "E-Commerce platform"], blurb: "Couchbase .NET SDK internals, plus the microservices e-commerce project." },
-        { name: "Python", level: 80, usedAt: ["Splitwise project", "Personal tooling"], blurb: "Django backend for the expense-sharing app, scripting, and ML coursework." },
-        { name: "Rust", level: 70, usedAt: ["Distributed KV Store"], blurb: "Built the storage engine (WAL, LSM-tree, compaction) to keep GC pauses out of the write path." },
-        { name: "C++", level: 78, usedAt: ["Competitive programming"], blurb: "Primary language across 2,000+ competitive programming problems." },
-      ]},
-      { name: "Systems & Architecture", items: [
-        { name: "Distributed Systems", level: 92, usedAt: ["Couchbase", "Sentinel Engine", "Distributed KV Store"], blurb: "Consensus (Raft), durable execution, replica routing, and failure recovery across three production and personal systems." },
-        { name: "Microservices", level: 90, usedAt: ["Capslock Marketplaces", "E-Commerce platform"], blurb: "Service decomposition, independent scaling, and per-service data ownership." },
-        { name: "Event-Driven (Kafka/RabbitMQ)", level: 88, usedAt: ["Capslock Marketplaces", "E-Commerce platform"], blurb: "Async request handling under peak load, and Saga-pattern checkout workflows." },
-        { name: "System Design at Scale", level: 90, usedAt: ["Couchbase", "Capslock Marketplaces"], blurb: "Designing for 10M+ users and SDKs sustaining ~10K ops/sec with zero failures." },
-      ]},
-      { name: "Data & Infra", items: [
-        { name: "Postgres / MySQL", level: 88, usedAt: ["Sentinel Engine", "Splitwise project"], blurb: "Postgres as a durable task queue (SELECT FOR UPDATE SKIP LOCKED) and relational data for expense tracking." },
-        { name: "Redis", level: 90, usedAt: ["Capslock Marketplaces", "E-Commerce platform"], blurb: "Caching layer in front of Postgres, sorted sets for live analytics, gRPC-backed basket state." },
-        { name: "Kubernetes / Docker", level: 82, usedAt: ["E-Commerce platform", "Distributed KV Store"], blurb: "Deployment, scaling, and sharding for both personal systems projects." },
-        { name: "AWS / Azure", level: 78, usedAt: ["Couchbase", "Capslock Marketplaces"], blurb: "Cloud-native deployment targets for SDKs and backend services." },
-      ]},
-      { name: "Reliability & Observability", items: [
-        { name: "Prometheus / Grafana", level: 85, usedAt: ["Sentinel Engine"], blurb: "Dashboards for dispatch latency and queue depth on the workflow engine." },
-        { name: "OpenTelemetry", level: 82, usedAt: ["Couchbase", "Sentinel Engine"], blurb: "Distributed tracing and Application Telemetry design at Couchbase." },
-        { name: "Performance Optimization", level: 92, usedAt: ["Couchbase", "Capslock Marketplaces"], blurb: "SDK network heuristics sustaining 10K ops/sec; Kafka/Redis re-architecture clearing production bottlenecks." },
-        { name: "Production Debugging", level: 94, usedAt: ["Couchbase"], blurb: "Resolved critical rebalancing defects — memory leaks and node-targeting bugs under live production load." },
-      ]},
-    ];
-    const animS = this.state.animated.skills;
-    const METER_LEN = 12;
-    const tierOf = (level) =>
-      level >= 90 ? "Expert" : level >= 80 ? "Advanced" : level >= 70 ? "Proficient" : "Familiar";
-    const skillGroups = skillGroupsRaw.map((g, gi) => ({
-      ...g,
-      items: g.items.map((s, i) => {
-        const key = `${gi}-${i}`;
-        const filled = Math.round((s.level / 100) * METER_LEN);
-        return {
-          ...s, key,
-          color: skillColors[i % skillColors.length],
-          filledStr: "■".repeat(filled),
-          emptyStr: "□".repeat(METER_LEN - filled),
-          meterClass: "skill-meter" + (animS ? " on" : ""),
-          tierLabel: tierOf(s.level),
-          tierBg: `color-mix(in srgb, ${skillColors[i % skillColors.length]} 16%, transparent)`,
-          expanded: !!this.state.expandedSkills[key],
-          caretClass: "skill-caret" + (this.state.expandedSkills[key] ? " open" : ""),
-          toggle: () => this.toggleSkill(key),
-        };
-      }),
-    }));
-
-    const cpBase = [
-      { name: "LeetCode", url: "https://leetcode.com/eklavyamishra2017/", icon: "https://cdn.simpleicons.org/leetcode", initials: "LC", statValue: "1813", statLabel: "Max rating", level: 90 },
-      { name: "CodeChef", url: "https://www.codechef.com/users/eklavyasaurabh", icon: "https://cdn.simpleicons.org/codechef/a6e22e", initials: "CC", statValue: "1932", statLabel: "Max rating (4★)", level: 96 },
-      { name: "Codeforces", url: "https://codeforces.com/profile/notdoinganymore", icon: "https://cdn.simpleicons.org/codeforces", initials: "CF", statValue: "1527", statLabel: "Max rating", level: 76 },
-      { name: "HackerRank", url: "https://www.hackerrank.com/vector07?hr_r=1", icon: "https://cdn.simpleicons.org/hackerrank/2ec866", initials: "HR", statValue: "6★", statLabel: "Problem solving", level: 100 },
-      { name: "AtCoder", url: "https://atcoder.jp/users/Vector007", icon: null, initials: "AC", statValue: "667", statLabel: "Max rating", level: 33 },
-      { name: "HackerEarth", url: "https://www.hackerearth.com/@eklavya12", icon: null, initials: "HE", badgeBg: "#2c3454", badgeFg: "#65d195", statValue: "1523", statLabel: "Max rating", level: 76 },
-      { name: "GitHub", url: "https://github.com/CosmicSaaurabh", icon: null, initials: "GH", badgeBg: "#24292f", badgeFg: "#f8f8f2", statValue: "Active", statLabel: "Contributor", level: 100 },
-      { name: "LinkedIn", url: "https://www.linkedin.com/in/2bsaurabh/", icon: null, initials: "in", badgeBg: "#0a66c2", badgeFg: "#ffffff", statValue: "Connect", statLabel: "Professional network", level: 100 },
-    ];
-    const animP = this.state.animated.profiles;
-    const codingProfiles = cpBase.map((c) => ({
-      ...c,
-      barWidth: animP ? `${c.level}%` : "0%",
-      fallbackDisplay: c.icon ? "none" : "flex",
-      fallbackBg: c.badgeBg ? `color-mix(in srgb, ${c.badgeBg} 30%, transparent)` : "color-mix(in srgb, var(--purple) 22%, transparent)",
-      fallbackFg: c.badgeFg || "var(--purple)",
-    }));
-
-    return {
-      files, openTabsData, activeFileLabel,
-      isMain: this.state.activeFile === "main",
-      isAbout: this.state.activeFile === "about",
-      isExperience: this.state.activeFile === "experience",
-      isEducation: this.state.activeFile === "education",
-      isProjects: this.state.activeFile === "projects",
-      isSkills: this.state.activeFile === "skills",
-      isProfiles: this.state.activeFile === "profiles",
-      isContact: this.state.activeFile === "contact",
-      typedLine1: l1, typedLine2: l2, typedLine3: l3,
-      cursorStyle: done ? "" : "",
-      jobs, education, projects, skillGroups, codingProfiles,
-      downloadResume: this.downloadResume,
-      runProgram: this.runProgram,
-    };
-  }
-}
-
-</script>
+<script type="module" src="ide-shell.js"></script>
 </body>
 </html>
