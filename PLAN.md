@@ -14,6 +14,10 @@ Maintained by the planning/verification agent. Implementation happens via approv
 | 5.1 | Repo-view content honesty — fabricated "Issues (closed)" replaced with "Engineering Decisions"; real issues link for public repos |
 | 6 | Career as `git log --graph` — `experience/history.git`, branch/merge graph, `git log`/`--oneline`/`branch` commands, mobile timeline |
 | 7 | Polish — welcome typing animation, `?` shortcuts overlay, decorative minimap (≥1200px), print stylesheet, welcome-view dedupe, Ctrl+Alt+Tab rebind |
+| 5.2 | LeetCode live rating fix — `'leetcode'` source switched from a dead endpoint (never returned a rating) to `alfa-leetcode-api.onrender.com`; `rating` derived as max across contest history to stay consistent with the static "Max rating" label |
+| 5.3 | Codeforces max/current rank mislabel fix — live line paired `maxRating` with the current-rating rank title (`newbie`) instead of the max-rating one (`specialist`); now uses `maxRank`, which the source already returned |
+| 5.4 | LeetCode Knight contest badge — real badge icon (hotlinked from LeetCode's own CDN) added next to the LeetCode name on the profile card; `achievements.log` gained one entry |
+| — | Favicon — hand-authored `favicon.svg` (SM monogram, dark rounded square, orange text) + `favicon.ico` fallback (16/32/48px), wired into `index.html` |
 
 Open issue from Phase 7 is tracked at the top of CLAUDE.md.
 
@@ -23,7 +27,7 @@ Open issue from Phase 7 is tracked at the top of CLAUDE.md.
 
 These are the only things genuinely blocking a public link.
 
-- **Favicon + Open Graph/Twitter meta tags + preview image.** Today the link previews as a bare URL — no title, image, or description. Highest-impact item on this list the moment the URL goes on a résumé or LinkedIn.
+- **Open Graph/Twitter meta tags + preview image.** Favicon is done; the link still previews as a bare URL otherwise — no title, image, or description. Highest-impact remaining item the moment the URL goes on a résumé or LinkedIn.
 - **`404.html`** for GitHub Pages (hash routing mostly avoids it, but direct-path typos land nowhere).
 - **Font loading.** Google Fonts currently load render-blocking; self-host or preload.
 - **Lighthouse pass** — record performance / a11y / SEO scores in CLAUDE.md.

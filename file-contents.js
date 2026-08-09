@@ -394,10 +394,11 @@ export const achievements = [
   { ts: "2021-06-19 20:00:00", level: "INFO", text: "Secured 1st place in Turing Test 6 coding competition (300+ teams)." },
   { ts: "2022-05-30 12:00:00", level: "INFO", text: "Graduated B.Tech, Computer Science, ABES Engineering College — 8.1 CGPA overall." },
   { ts: "2026-07-27 08:00:00", level: "INFO", text: "Solved 2,000+ algorithm and data structure problems across competitive programming platforms." },
+  { ts: "2026-08-09 12:00:00", level: "INFO", text: "Earned LeetCode's Knight contest badge — rating in the top 5% of all ranked users (peak rating 1876)." },
 ];
 
 export const codingProfiles = [
-  { name: "LeetCode", url: "https://leetcode.com/eklavyamishra2017/", icon: "https://cdn.simpleicons.org/leetcode", statValue: "1813", statLabel: "Max rating" },
+  { name: "LeetCode", url: "https://leetcode.com/eklavyamishra2017/", icon: "https://cdn.simpleicons.org/leetcode", statValue: "1876", statLabel: "Max rating", badge: { name: "Knight", icon: "https://leetcode.com/static/images/badges/knight.png" } },
   { name: "CodeChef", url: "https://www.codechef.com/users/eklavyasaurabh", icon: "https://cdn.simpleicons.org/codechef/a6e22e", statValue: "1932", statLabel: "Max rating (4★)" },
   { name: "Codeforces", url: "https://codeforces.com/profile/notdoinganymore", icon: "https://cdn.simpleicons.org/codeforces", statValue: "1527", statLabel: "Max rating" },
   { name: "HackerRank", url: "https://www.hackerrank.com/vector07?hr_r=1", icon: "https://cdn.simpleicons.org/hackerrank/2ec866", statValue: "6★", statLabel: "Problem solving" },

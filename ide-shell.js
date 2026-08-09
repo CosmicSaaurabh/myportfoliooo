@@ -220,7 +220,7 @@ function profileCard(p) {
   if (p.name === 'Codeforces') {
     const d = getLiveData('codeforces');
     if (d && d.live && d.value) {
-      liveLine = `<div class="profile-live">${liveDot(`Live — updated ${timeAgo(new Date(d.updatedAt).toISOString())}`)} rating <strong>${esc(String(d.value.rating))}</strong> (max ${esc(String(d.value.maxRating))}, ${esc(d.value.rank || '')})</div>`;
+      liveLine = `<div class="profile-live">${liveDot(`Live — updated ${timeAgo(new Date(d.updatedAt).toISOString())}`)} rating <strong>${esc(String(d.value.rating))}</strong> (max ${esc(String(d.value.maxRating))}, ${esc(d.value.maxRank || '')})</div>`;
     }
   }
   if (p.name === 'LeetCode') {
@@ -229,10 +229,13 @@ function profileCard(p) {
       liveLine = `<div class="profile-live">${liveDot(`Live — updated ${timeAgo(new Date(d.updatedAt).toISOString())}`)} rating <strong>${esc(String(Math.round(d.value.rating || 0)))}</strong>${d.value.totalSolved ? `, ${esc(String(d.value.totalSolved))} solved` : ''}</div>`;
     }
   }
+  const badgeHtml = p.badge
+    ? `<img class="profile-badge-icon" src="${p.badge.icon}" alt="${esc(p.badge.name)} badge" title="${esc(p.badge.name)} badge" loading="lazy">`
+    : '';
   return `<a class="profile-card" href="${p.url}" target="_blank" rel="noopener">
     ${p.icon ? `<img class="profile-icon" src="${p.icon}" alt="" loading="lazy">` : `<span class="profile-icon profile-icon-fallback">${esc(p.name.slice(0, 2).toUpperCase())}</span>`}
     <div class="profile-body">
-      <div class="profile-name">${esc(p.name)}</div>
+      <div class="profile-name">${esc(p.name)}${badgeHtml}</div>
       <div class="profile-stat">${esc(p.statValue)} <span class="profile-stat-label">${esc(p.statLabel)}</span></div>
       ${liveLine}
     </div>

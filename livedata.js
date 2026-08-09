@@ -133,17 +133,33 @@ if (lcProfile) {
   const handleMatch = lcProfile.url.match(/leetcode\.com\/([^/]+)/);
   const handle = handleMatch ? handleMatch[1] : null;
   if (handle) {
-    // Best-effort community endpoint — no official LeetCode API exists. Any failure (CORS,
-    // 404, shape change) silently falls through to the static value; never a hard dependency.
+    // Best-effort community endpoint — no official LeetCode API exists, and LeetCode's own
+    // GraphQL endpoint (leetcode.com/graphql) has no CORS allowance for third-party origins,
+    // so it cannot be called from a static site. This wrapper does send
+    // access-control-allow-origin: *. Any failure (CORS, 404, shape change, Render free-tier
+    // cold start exceeding FETCH_TIMEOUT_MS) silently falls through to the static value —
+    // never a hard dependency. `rating` is deliberately the max across contest history, not
+    // the live `contestRating`, so it stays consistent with the static "Max rating" label in
+    // file-contents.js instead of contradicting it after a rating dip.
     registerSource({
       id: 'leetcode',
-      url: `https://leetcode-stats-api.herokuapp.com/${encodeURIComponent(handle)}`,
+      url: `https://alfa-leetcode-api.onrender.com/${encodeURIComponent(handle)}/contest`,
       ttl: SIX_HOURS,
-      host: 'leetcode-stats-api.herokuapp.com',
+      host: 'alfa-leetcode-api.onrender.com',
       parse: (json) => {
-        if (!json || json.status === 'error') return null;
-        if (typeof json.ranking !== 'number' && typeof json.rating !== 'number') return null;
-        return { rating: json.rating ?? null, ranking: json.ranking ?? null, totalSolved: json.totalSolved ?? null };
+        if (!json || typeof json.contestRating !== 'number') return null;
+        const history = Array.isArray(json.contestParticipation) ? json.contestParticipation : [];
+        const maxRating = history.reduce(
+          (max, c) => (typeof c.rating === 'number' && c.rating > max ? c.rating : max),
+          json.contestRating
+        );
+        return {
+          rating: maxRating,
+          currentRating: json.contestRating,
+          ranking: typeof json.contestGlobalRanking === 'number' ? json.contestGlobalRanking : null,
+          attended: typeof json.contestAttend === 'number' ? json.contestAttend : null,
+          totalSolved: null,
+        };
       },
       fallback: null,
     });
