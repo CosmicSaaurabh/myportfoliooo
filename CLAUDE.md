@@ -49,6 +49,28 @@ Current structure:
 - **Phase 6 - git-log experience view**: ✅ implemented. `experience/history.git` renders career history as a `git log --graph`-style commit graph: `highlights` restructured to `{type, scope, subject, body}` (subjects reviewed/approved before build; `body` = original text verbatim, YAML view visually unchanged). Desktop graph uses a 2-column box-drawing gutter, per-role branch colors from `--pink/--blue/--purple/--orange/--green`, deterministic 7-hex commit hashes (dimmed, non-linking), Capslock rendered as an unmerged `HEAD` branch. Rows are focusable/Enter-activatable, opening the role's `.yaml` tab. `git log` / `git log --oneline` / `git branch` / bare `git` added to the terminal registry (surfacing in the palette automatically) with tab completion. Mobile (<768px) collapses to a single-rule vertical timeline, same click targets, no horizontal scroll.
 - **Phase 7 - polish backlog** (welcome typing, `?` shortcuts overlay, minimap, print stylesheet): ✅ implemented. Task 0 deduped the welcome view to one source (`index.html` canonical, captured via `outerHTML` at init); Ctrl/Cmd+Tab rebound to Ctrl/Cmd+Alt+Tab (kept working, misleading old hint removed). Typing animation uses a color-transparent-real-element + decorative aria-hidden overlay technique - real text is never emptied/appended, stays fully in the DOM/AT tree throughout; ~45ms/char ±10ms jitter, title then subtitle, once per session (`ide.welcome-typed.v1`), instant final state under `prefers-reduced-motion: reduce`. `?` overlay reuses palette's backdrop/dialog styling and focus-trap pattern, guarded against text-input focus and modifier keys; also a `shortcuts` REGISTRY command (auto-surfaces in palette). Minimap: absolutely-positioned overlay on `.editor-col` (≥1200px, `.code` views only - prose views render nothing), per-line proportional bars tinted from each line's first `tok-*` class, redrawn only on file/theme change, viewport rect synced on scroll; **click-to-scroll only, no drag** (per the prompt's stated fallback allowance). Print stylesheet: chrome/overlays/minimap hidden, forced light palette overrides regardless of active theme, line-number gutters hidden, `max-height`/`overflow` constraints removed so content paginates, `a[href^="http"]::after` expands URLs.
 
+## Colour policy (audited 2026-08-25, WCAG 2.1 AA)
+
+Two rules, both load-bearing:
+
+1. **`--comment` is the code-comment colour and must never carry UI label text.** It is
+   deliberately dim (3.03:1 in Monokai and Dracula - that dimness *is* the theme). Roughly a dozen
+   UI labels had borrowed it (eyebrows, metric captions, simulation headings, breadcrumb segments,
+   post meta, tour step counter). They all use `--fg-dim` now, which clears AA in all four themes.
+2. **Syntax colouring is exempt and stays exempt.** `tok-*`, line numbers, commit hashes and commit
+   types follow theme identity, as they do in every real editor. Do not "fix" them.
+
+Solarized Dark needed every accent lifted: each canonical value sat between 2.8:1 and 4.7:1 on the
+theme's two surfaces, failing AA wherever an accent carried label-sized text. Each was raised to
+the minimum clearing 4.5:1 on `--bg-2` (the lighter surface), preserving hue and changing only
+value. Two new tokens exist for cases a single palette entry could not serve: `--statusbar-fg`
+(`--bg-2` on `--blue` was 3.53:1 in Solarized) and `--glyph-dim` (file-type glyphs, so tuning them
+never disturbs code-comment colouring).
+
+Decorative glyphs that duplicate adjacent text (`.tree-icon`, `.crumb-glyph`) are `aria-hidden`
+and exempt. Remaining known-marginal: `.sim-btn-danger` 4.38:1 and `kbd` 4.29:1 - accent chips
+within ~0.2 of threshold, accepted deliberately.
+
 ## Verification lesson (2026-08-25)
 
 `closeTab` was deleted wholesale by a scripted edit and shipped broken: clicking a tab's x or

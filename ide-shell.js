@@ -577,7 +577,7 @@ function fileRow(id, depth) {
   row.tabIndex = 0;
   row.style.paddingLeft = `${12 + depth * 14}px`;
   row.dataset.id = id;
-  row.innerHTML = `<span class="tree-chevron" aria-hidden="true"></span><span class="tree-icon" style="color:${meta.color}">${meta.glyph}</span><span>${f.name}</span>`;
+  row.innerHTML = `<span class="tree-chevron" aria-hidden="true"></span><span class="tree-icon" aria-hidden="true" style="color:${meta.color}">${meta.glyph}</span><span>${f.name}</span>`;
   row.addEventListener('click', () => openFile(id));
   row.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openFile(id); } });
   return row;
@@ -589,7 +589,7 @@ function folderRow(node) {
   header.setAttribute('role', 'treeitem');
   header.setAttribute('aria-expanded', 'true');
   header.tabIndex = 0;
-  header.innerHTML = `<span class="tree-chevron open" aria-hidden="true">▸</span><span class="tree-icon">📁</span><span>${esc(node.name)}</span>`;
+  header.innerHTML = `<span class="tree-chevron open" aria-hidden="true">▸</span><span class="tree-icon" aria-hidden="true">📁</span><span>${esc(node.name)}</span>`;
   const childrenWrap = document.createElement('div');
   childrenWrap.className = 'tree-children';
   childrenWrap.setAttribute('role', 'group');
@@ -631,7 +631,7 @@ function renderTabs() {
     tab.setAttribute('role', 'tab');
     tab.setAttribute('aria-selected', String(id === activeId));
     tab.tabIndex = 0;
-    tab.innerHTML = `<span class="tree-icon" style="color:${meta.color}">${meta.glyph}</span><span>${f.name}</span><span class="tab-close" data-id="${id}" aria-label="Close ${f.name}" role="button" tabindex="0">×</span>`;
+    tab.innerHTML = `<span class="tree-icon" aria-hidden="true" style="color:${meta.color}">${meta.glyph}</span><span>${f.name}</span><span class="tab-close" data-id="${id}" aria-label="Close ${f.name}" role="button" tabindex="0">×</span>`;
     tab.addEventListener('click', (e) => { if (e.target.closest('.tab-close')) return; setActive(id); });
     const closeBtn = tab.querySelector('.tab-close');
     closeBtn.addEventListener('click', (e) => { e.stopPropagation(); closeTab(id); });
@@ -702,7 +702,7 @@ function renderBreadcrumbs() {
   const crumbs = parts.map((part, i) => {
     const last = i === parts.length - 1;
     if (!last) return `<span class="crumb crumb-dir">${esc(part)}</span>`;
-    return `<span class="crumb crumb-file" aria-current="page"><span class="crumb-glyph" style="color:${meta.color || 'var(--fg-dim)'}">${esc(meta.glyph || '')}</span>${esc(part)}</span>`;
+    return `<span class="crumb crumb-file" aria-current="page"><span class="crumb-glyph" aria-hidden="true" style="color:${meta.color || 'var(--fg-dim)'}">${esc(meta.glyph || '')}</span>${esc(part)}</span>`;
   });
   el.innerHTML = crumbs.join('<span class="crumb-sep" aria-hidden="true">›</span>')
     + (splitId && !isNarrow() ? `<button type="button" class="crumb-split-off" id="split-off">Close split</button>` : '');

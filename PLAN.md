@@ -122,7 +122,7 @@ Derive the owner from `p.github` using the existing `ownerRepoFromUrl()` helper 
 The single highest-leverage item here is Open Graph.
 Today the link previews as a bare URL in LinkedIn, Slack, WhatsApp, and email - which is exactly where a recruiter will paste it.
 
-- `assets/og-image.png` at 1200×630, hand-authored to mirror the site: Monokai surface, name, "Backend Engineer — Distributed Systems", three metrics, and the git-graph motif. Author as SVG, convert once, commit the PNG.
+- `assets/og-image.png` at 1200×630, hand-authored to mirror the site: Monokai surface, name, "Backend Engineer - Distributed Systems", three metrics, and the git-graph motif. Author as SVG, convert once, commit the PNG.
 - Full `og:` and `twitter:card` tag set, plus `<link rel="canonical">`.
 - JSON-LD `Person` schema (name, jobTitle, worksFor, alumniOf, sameAs → GitHub/LinkedIn/LeetCode).
 - `404.html`, `robots.txt`, `sitemap.xml`, and `.nojekyll` (the last one is a latent GitHub Pages trap, not currently biting).

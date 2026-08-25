@@ -14,6 +14,8 @@
   --pink:#f92672; --green:#a6e22e; --yellow:#e6db74; --purple:#ae81ff;
   --blue:#66d9ef; --orange:#fd971f; --violet:#c792ea; --teal:#79dfc1;
   --badge-bg:#2b2b26; --badge-text:#0b0c0a; --backdrop:rgba(0,0,0,.55); --shadow:rgba(0,0,0,.7);
+  --statusbar-fg:#1e1f1c;
+  --glyph-dim:#949082;
   --font-mono:'JetBrains Mono', ui-monospace, monospace;
   --font-sans:'Inter', system-ui, sans-serif;
   --radius:6px;
@@ -29,7 +31,7 @@ body{
 a{color:var(--blue); text-decoration:none}
 a:hover{color:var(--green)}
 button{font-family:inherit; color:inherit; background:none; border:0; cursor:pointer}
-kbd{font-family:var(--font-mono); font-size:11px; background:var(--panel); border:1px solid var(--border); border-radius:4px; padding:2px 6px}
+kbd{font-family:var(--font-mono); font-size:11px; background:var(--bg); color:var(--fg); border:1px solid var(--border); border-radius:4px; padding:2px 6px}
 
 .ide{display:flex; flex-direction:column; height:100vh; width:100%; overflow:hidden}
 /* An author `display:flex` beats the UA stylesheet's [hidden] rule, so state it explicitly. */
@@ -125,7 +127,7 @@ kbd{font-family:var(--font-mono); font-size:11px; background:var(--panel); borde
 .tree-row:hover{background:color-mix(in srgb, var(--fg) 6%, transparent); color:var(--fg)}
 .tree-row[aria-selected="true"]{background:color-mix(in srgb, var(--blue) 14%, transparent); color:var(--fg)}
 .tree-row:focus-visible{outline:2px solid var(--blue); outline-offset:-2px}
-.tree-chevron{width:12px; flex:none; font-size:10px; transition:transform var(--transition-fast); color:var(--comment)}
+.tree-chevron{width:12px; flex:none; font-size:10px; transition:transform var(--transition-fast); color:var(--fg-dim)}
 .tree-chevron.open{transform:rotate(90deg)}
 .tree-icon{width:14px; flex:none; text-align:center; font-weight:700; font-size:10.5px}
 .tree-children{padding-left:14px}
@@ -168,10 +170,10 @@ kbd{font-family:var(--font-mono); font-size:11px; background:var(--panel); borde
   font-family:var(--font-mono); font-size:11.5px; color:var(--comment); overflow-x:auto; white-space:nowrap;
 }
 .breadcrumbs[hidden]{display:none}
-.crumb-dir{color:var(--comment)}
+.crumb-dir{color:var(--fg-dim)}
 .crumb-file{color:var(--fg-dim); display:inline-flex; align-items:center; gap:6px}
 .crumb-glyph{font-weight:700; font-size:10px}
-.crumb-sep{color:var(--border)}
+.crumb-sep{color:var(--fg-dim); opacity:.55}
 .crumb-split-off{
   margin-left:auto; font-family:var(--font-mono); font-size:11px; color:var(--comment);
   border:1px solid var(--border); border-radius:4px; padding:2px 8px; flex:none;
@@ -344,8 +346,8 @@ kbd{font-family:var(--font-mono); font-size:11px; background:var(--panel); borde
   background:var(--panel); color:var(--fg); text-decoration:none;
 }
 .profile-card:hover{border-color:color-mix(in srgb, var(--blue) 45%, var(--border))}
-.profile-icon{width:32px; height:32px; flex:none; border-radius:6px; object-fit:contain}
-.profile-icon-fallback{background:var(--bg-3); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:var(--fg-dim); font-family:var(--font-mono)}
+.profile-icon{width:32px; height:32px; flex:none; border-radius:6px; object-fit:contain; color:var(--fg)}
+.profile-icon-fallback{background:var(--bg-2); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:var(--fg); font-family:var(--font-mono)}
 .profile-name{font-size:14px; font-weight:600; margin-bottom:4px}
 .profile-badge-icon{width:16px; height:16px; object-fit:contain; vertical-align:middle; margin-left:6px}
 .profile-stat{font-family:var(--font-mono); font-size:15px}
@@ -385,7 +387,7 @@ kbd{font-family:var(--font-mono); font-size:11px; background:var(--panel); borde
 /* ---------- README landing view ---------- */
 .readme-view{max-width:860px}
 .readme-hero{padding:8px 0 4px}
-.readme-eyebrow{font-family:var(--font-mono); font-size:12px; color:var(--comment); letter-spacing:.04em; margin:0 0 10px}
+.readme-eyebrow{font-family:var(--font-mono); font-size:12px; color:var(--fg-dim); letter-spacing:.04em; margin:0 0 10px}
 .readme-name{font-size:38px; line-height:1.1; font-weight:700; margin:0 0 6px; color:var(--fg)}
 .readme-title{font-family:var(--font-mono); font-size:15px; color:var(--blue); margin:0 0 16px}
 .readme-pitch{font-size:16px; line-height:1.65; color:var(--fg-dim); margin:0 0 22px; max-width:64ch}
@@ -440,13 +442,13 @@ kbd{font-family:var(--font-mono); font-size:11px; background:var(--panel); borde
 .qa-q{font-size:15px; font-weight:650; line-height:1.45; margin:0 0 8px; color:var(--fg)}
 .qa-num{font-family:var(--font-mono); font-size:11px; color:var(--orange); margin-right:8px; letter-spacing:.05em}
 .qa-a{font-size:14px; line-height:1.7; color:var(--fg-dim); margin:0 0 10px}
-.post-meta{font-family:var(--font-mono); font-size:12px; color:var(--comment); margin:0 0 18px}
+.post-meta{font-family:var(--font-mono); font-size:12px; color:var(--fg-dim); margin:0 0 18px}
 
 /* ---------- durable-queue simulation ---------- */
 .sim{display:flex; flex-direction:column; gap:16px; min-width:0; container-type:inline-size}
 .sim-title{font-size:19px; font-weight:650; margin:0 0 8px; color:var(--fg)}
 .sim-sub{font-size:13.5px; line-height:1.65; color:var(--fg-dim); margin:0; max-width:72ch}
-.sim-sub code{font-family:var(--font-mono); font-size:12.5px; background:var(--bg-3); padding:1px 5px; border-radius:4px; color:var(--orange)}
+.sim-sub code{font-family:var(--font-mono); font-size:12.5px; background:var(--bg-2); padding:1px 5px; border-radius:4px; color:var(--orange)}
 .sim-sub strong{color:var(--green)}
 .sim-controls{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
 .sim-btn{
@@ -459,7 +461,7 @@ kbd{font-family:var(--font-mono); font-size:11px; background:var(--panel); borde
 .sim-btn-danger:hover{background:var(--pink); color:var(--bg); border-color:var(--pink)}
 .sim-btn-warn{border-color:var(--orange); color:var(--orange)}
 .sim-btn-warn:hover{background:var(--orange); color:var(--bg); border-color:var(--orange)}
-.sim-speed{display:flex; align-items:center; gap:8px; font-family:var(--font-mono); font-size:12px; color:var(--comment)}
+.sim-speed{display:flex; align-items:center; gap:8px; font-family:var(--font-mono); font-size:12px; color:var(--fg-dim)}
 .sim-speed input{width:96px; accent-color:var(--blue)}
 .sim-counters{display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap:10px; min-width:0}
 .sim-counter{
@@ -467,7 +469,7 @@ kbd{font-family:var(--font-mono); font-size:11px; background:var(--panel); borde
   padding:12px 14px; display:flex; flex-direction:column; gap:3px; min-width:0;
 }
 .sim-counter .n{font-family:var(--font-mono); font-size:24px; font-weight:700; color:var(--fg); line-height:1.1}
-.sim-counter .l{font-size:11.5px; color:var(--comment); line-height:1.35}
+.sim-counter .l{font-size:11.5px; color:var(--fg-dim); line-height:1.35}
 .sim-counter.is-fence .n{color:var(--orange)}
 .sim-counter.is-good{border-color:var(--green)}
 .sim-counter.is-good .n{color:var(--green)}
@@ -479,11 +481,11 @@ kbd{font-family:var(--font-mono); font-size:11px; background:var(--panel); borde
   .sim-w-lease{flex:1 1 100%; max-width:none}
 }
 .sim-col{min-width:0}
-.sim-h{font-family:var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:.09em; color:var(--comment); margin:0 0 10px; font-weight:600}
+.sim-h{font-family:var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:.09em; color:var(--fg-dim); margin:0 0 10px; font-weight:600}
 .sim-queue{display:flex; flex-wrap:wrap; gap:6px; align-content:flex-start}
 .sim-task{
   font-family:var(--font-mono); font-size:12px; padding:5px 9px; border-radius:4px;
-  border:1px solid var(--border); background:var(--bg-2); color:var(--fg-dim);
+  border:1px solid var(--border); background:var(--bg-2); color:var(--fg);
 }
 .sim-task sup{font-size:9px; color:var(--orange); margin-left:2px}
 .sim-task.is-leased{border-color:var(--blue); color:var(--blue)}
@@ -496,8 +498,8 @@ kbd{font-family:var(--font-mono); font-size:11px; background:var(--panel); borde
   border:1px solid var(--border); border-left-width:3px; border-radius:var(--radius); background:var(--bg-2);
 }
 .sim-w-id{font-weight:700; color:var(--fg); flex:none; width:26px}
-.sim-w-status{font-size:11px; color:var(--comment); flex:none; min-width:66px}
-.sim-w-task{color:var(--fg-dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1 1 108px; min-width:0}
+.sim-w-status{font-size:11px; color:var(--fg-dim); flex:none; min-width:66px}
+.sim-w-task{color:var(--fg); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1 1 108px; min-width:0}
 .sim-w-lease{display:block; height:6px; background:var(--bg-3); border-radius:3px; overflow:hidden; flex:1 1 72px; max-width:96px}
 .sim-worker > .sim-w-lease:nth-child(4){max-width:96px}
 .sim-w-lease i{display:block; height:100%; background:var(--blue); border-radius:3px}
@@ -517,7 +519,7 @@ kbd{font-family:var(--font-mono); font-size:11px; background:var(--panel); borde
   font-family:var(--font-mono); font-size:12px; line-height:1.7; max-height:230px; overflow-y:auto;
   border:1px solid var(--border); border-radius:var(--radius); background:var(--bg-2); padding:10px 12px;
 }
-.sim-log-row{color:var(--fg-dim); white-space:pre-wrap; word-break:break-word}
+.sim-log-row{color:var(--fg); white-space:pre-wrap; word-break:break-word}
 .sim-log-row.k-claim{color:var(--blue)}
 .sim-log-row.k-done{color:var(--green)}
 .sim-log-row.k-reap{color:var(--purple)}
@@ -526,7 +528,7 @@ kbd{font-family:var(--font-mono); font-size:11px; background:var(--panel); borde
 .sim-log-row.k-fence{color:var(--orange); font-weight:700}
 .tok-pink{color:var(--pink)}
 .sim-log-row.k-dead{color:var(--pink)}
-.sim-log-row.k-sim{color:var(--comment)}
+.sim-log-row.k-sim{color:var(--fg-dim)}
 @media (max-width:768px){
   .sim-grid{grid-template-columns:minmax(0, 1fr)}
   .readme-name{font-size:29px}
@@ -536,7 +538,7 @@ kbd{font-family:var(--font-mono); font-size:11px; background:var(--panel); borde
 /* ---------- content search (Ctrl/Cmd+Shift+F) ---------- */
 .search-dialog{max-width:660px}
 .search-summary{
-  font-family:var(--font-mono); font-size:11.5px; color:var(--comment);
+  font-family:var(--font-mono); font-size:11.5px; color:var(--fg-dim);
   margin:0; padding:8px 14px; border-bottom:1px solid var(--border);
 }
 .search-results{max-height:46vh}
@@ -567,7 +569,7 @@ body.is-plain{overflow:auto; height:auto}
 }
 .plain-view[hidden]{display:none}
 .pv-hero{padding-bottom:12px; border-bottom:1px solid var(--border); margin-bottom:8px}
-.pv-eyebrow{font-family:var(--font-mono); font-size:12px; color:var(--comment); margin:0 0 12px; letter-spacing:.03em}
+.pv-eyebrow{font-family:var(--font-mono); font-size:12px; color:var(--fg-dim); margin:0 0 12px; letter-spacing:.03em}
 .pv-name{font-size:clamp(30px, 7vw, 46px); line-height:1.08; font-weight:700; margin:0 0 6px}
 .pv-role{font-family:var(--font-mono); font-size:15px; color:var(--blue); margin:0 0 18px}
 .pv-pitch{font-size:16.5px; line-height:1.65; color:var(--fg-dim); margin:0 0 24px; max-width:62ch}
@@ -575,7 +577,7 @@ body.is-plain{overflow:auto; height:auto}
 .pv-metrics{display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap:12px; margin-bottom:26px; min-width:0}
 .pv-metric{border:1px solid var(--border); border-radius:var(--radius); padding:14px; background:var(--bg-2); min-width:0}
 .pv-metric-n{display:block; font-family:var(--font-mono); font-size:23px; font-weight:700; color:var(--fg); line-height:1.15}
-.pv-metric-l{display:block; font-size:12px; color:var(--comment); margin-top:3px}
+.pv-metric-l{display:block; font-size:12px; color:var(--fg-dim); margin-top:3px}
 .pv-section{padding:26px 0; border-bottom:1px solid var(--border)}
 .pv-section > h2{
   font-family:var(--font-mono); font-size:12px; text-transform:uppercase; letter-spacing:.11em;
@@ -585,14 +587,14 @@ body.is-plain{overflow:auto; height:auto}
 .pv-role-item:last-child,.pv-project:last-child{margin-bottom:0}
 .pv-role-head{display:flex; flex-wrap:wrap; gap:4px 14px; align-items:baseline; justify-content:space-between}
 .pv-role-head h3{font-size:16.5px; font-weight:650; margin:0; color:var(--fg)}
-.pv-period{font-family:var(--font-mono); font-size:12px; color:var(--comment); white-space:nowrap}
+.pv-period{font-family:var(--font-mono); font-size:12px; color:var(--fg-dim); white-space:nowrap}
 .pv-tag{
   display:inline-block; font-family:var(--font-mono); font-size:10.5px; color:var(--green);
   border:1px solid var(--green); border-radius:3px; padding:1px 7px; margin-top:7px;
 }
 .pv-bullets{margin:10px 0 0; padding-left:19px; display:flex; flex-direction:column; gap:7px}
 .pv-bullets li{font-size:14.5px; line-height:1.65; color:var(--fg-dim)}
-.pv-date{font-family:var(--font-mono); font-size:11.5px; color:var(--comment); margin-right:10px}
+.pv-date{font-family:var(--font-mono); font-size:11.5px; color:var(--fg-dim); margin-right:10px}
 .pv-sub{font-size:14.5px; line-height:1.65; color:var(--fg-dim); margin:8px 0 10px}
 .pv-metric-row{display:flex; flex-wrap:wrap; gap:6px 18px; margin:0 0 10px}
 .pv-inline-metric{font-size:13px; color:var(--fg-dim)}
@@ -618,7 +620,7 @@ body.is-plain{overflow:auto; height:auto}
 .pv-profile:hover{border-color:var(--blue)}
 .pv-profile-name{font-size:13.5px; font-weight:600; color:var(--fg)}
 .pv-profile-stat{font-family:var(--font-mono); font-size:13px; color:var(--green)}
-.pv-profile-stat em{font-style:normal; font-size:11px; color:var(--comment)}
+.pv-profile-stat em{font-style:normal; font-size:11px; color:var(--fg-dim)}
 .pv-footer{padding-top:26px}
 .pv-footer p{font-size:14px; line-height:1.7; color:var(--fg-dim); margin:0 0 16px; max-width:60ch}
 .pv-hint{
@@ -650,11 +652,11 @@ body.is-plain{overflow:auto; height:auto}
   background:var(--panel); border:1px solid var(--border); border-radius:8px;
   box-shadow:0 16px 44px -12px var(--shadow); padding:16px; font-family:var(--font-sans);
 }
-.tour-step{font-family:var(--font-mono); font-size:10.5px; color:var(--comment); margin:0 0 7px; letter-spacing:.07em}
+.tour-step{font-family:var(--font-mono); font-size:10.5px; color:var(--fg-dim); margin:0 0 7px; letter-spacing:.07em}
 .tour-title{font-size:15.5px; font-weight:650; margin:0 0 7px; color:var(--fg)}
 .tour-body{font-size:13.5px; line-height:1.6; color:var(--fg-dim); margin:0 0 16px}
 .tour-actions{display:flex; gap:8px; justify-content:flex-end}
-.tour-skip{font-size:12.5px; color:var(--comment); padding:7px 12px; border-radius:5px}
+.tour-skip{font-size:12.5px; color:var(--fg-dim); padding:7px 12px; border-radius:5px}
 .tour-skip:hover{color:var(--fg)}
 .tour-next{
   font-size:12.5px; font-weight:650; color:var(--bg); background:var(--blue);
@@ -670,7 +672,7 @@ body.is-plain{overflow:auto; height:auto}
 
 /* Status bar */
 .statusbar{
-  flex:none; height:24px; background:var(--blue); color:var(--bg-2); display:flex;
+  flex:none; height:24px; background:var(--blue); color:var(--statusbar-fg); display:flex;
   align-items:center; gap:16px; padding:0 12px; font-size:11.5px; font-weight:600;
 }
 .sb-item{display:flex; align-items:center; gap:5px}
@@ -701,16 +703,25 @@ html[data-theme="dracula"]{
   --pink:#ff79c6; --green:#50fa7b; --yellow:#f1fa8c; --purple:#bd93f9;
   --blue:#8be9fd; --orange:#ffb86c; --violet:#bd93f9; --teal:#8be9fd;
   --badge-bg:#191a21; --badge-text:#191a21; --backdrop:rgba(0,0,0,.6); --shadow:rgba(0,0,0,.75);
+  --statusbar-fg:#21222c;
+  --glyph-dim:#7d8ec4;
 }
 /* Solarized Dark: canonical base00–base03/accent hexes, with one deliberate deviation —
    --comment (used here for body-sized text, not just decoration) is brightened past the
    canonical base01 #586e75, which only clears ~3.5:1 on base03 and fails AA for body text. */
 html[data-theme="solarized-dark"]{
   --bg:#002b36; --bg-2:#073642; --bg-3:#0a3f4d; --panel:#073642; --sidebar-bg:#00252e;
-  --fg:#93a1a1; --fg-dim:#839496; --comment:#8a9ba3; --border:#073642;
-  --pink:#dc322f; --green:#859900; --yellow:#b58900; --purple:#6c71c4;
-  --blue:#268bd2; --orange:#cb4b16; --violet:#d33682; --teal:#2aa198;
+  --fg:#93a1a1; --fg-dim:#8c9b9d; --comment:#8a9ba3; --border:#073642;
+  /* Every canonical Solarized accent sits between 2.8:1 and 4.7:1 on this theme's two surfaces,
+     so all of them failed AA wherever they carry label-sized text (depth badges, decision labels,
+     commit types, breadcrumb glyphs). Each is lifted to the minimum that clears 4.5:1 on --bg-2,
+     the lighter surface, which keeps the hue and raises only the value. */
+  --pink:#e87674; --green:#8fa114; --yellow:#bc9417; --purple:#8f93d2;
+  --blue:#58b0ec; --orange:#db815c; --violet:#e174a9; --teal:#39a89f;
   --badge-bg:#073642; --badge-text:#002b36; --backdrop:rgba(0,0,0,.6); --shadow:rgba(0,0,0,.75);
+  /* --bg-2 on this theme's mid-tone blue is only 3.53:1; this clears AA at 4.84:1. */
+  --statusbar-fg:#001b22;
+  --glyph-dim:#8a9ba3;
 }
 /* GitHub Light: every pale/dark-mode-style hue darkened to clear WCAG AA (4.5:1) on white —
    most notably --yellow (a raw amber #9a6700, not a pale yellow) and --comment (#6e7781,
@@ -721,6 +732,8 @@ html[data-theme="github-light"]{
   --pink:#cf222e; --green:#1a7f37; --yellow:#9a6700; --purple:#8250df;
   --blue:#0969da; --orange:#bc4c00; --violet:#8250df; --teal:#1b7c83;
   --badge-bg:#24292f; --badge-text:#ffffff; --backdrop:rgba(31,35,40,.4); --shadow:rgba(31,35,40,.15);
+  --statusbar-fg:#f6f8fa;
+  --glyph-dim:#656d76;
 }
 .hamburger{display:none}
 @media (max-width:768px){

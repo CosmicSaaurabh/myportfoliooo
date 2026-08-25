@@ -49,7 +49,7 @@ export const EXT_META = {
   md: { glyph: 'M', color: 'var(--blue)' },
   yaml: { glyph: 'Y', color: 'var(--purple)' },
   json: { glyph: '{}', color: 'var(--yellow)' },
-  log: { glyph: '≡', color: 'var(--comment)' },
+  log: { glyph: '≡', color: 'var(--glyph-dim)' },
   sh: { glyph: '$', color: 'var(--green)' },
   git: { glyph: '⎇', color: 'var(--orange)' },
   sim: { glyph: '▶', color: 'var(--pink)' },
