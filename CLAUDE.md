@@ -60,6 +60,12 @@ New modules, all leaves or near-leaves so the graph stays acyclic:
 
 New persistence keys: `ide.view.v1`, `ide.view-hint.v1`, `ide.tour.v1`.
 
+`sim-queue.js` sizes off its **container**, not the viewport (`container-type: inline-size` plus
+`@container (max-width: 620px)`), because it now also renders inside a split pane. Its worker rows
+are flex-wrap, not a fixed grid: the old `grid-template-columns: 44px 84px minmax(0,1fr) 84px`
+collapsed the task/fence column to 0px in any container under ~620px, hiding the fence token that
+is the whole point of the demo. Do not reintroduce fixed column widths there.
+
 `sim-queue.js` invariant, do not regress it: the lease lives on the **task**, not the worker.
 An earlier draft keyed the reaper off each worker's lease, so a dead worker kept re-reaping a task
 another worker legitimately owned - 95 spurious requeues and the fence check never fired. The store

@@ -443,7 +443,7 @@ kbd{font-family:var(--font-mono); font-size:11px; background:var(--panel); borde
 .post-meta{font-family:var(--font-mono); font-size:12px; color:var(--comment); margin:0 0 18px}
 
 /* ---------- durable-queue simulation ---------- */
-.sim{display:flex; flex-direction:column; gap:16px; min-width:0}
+.sim{display:flex; flex-direction:column; gap:16px; min-width:0; container-type:inline-size}
 .sim-title{font-size:19px; font-weight:650; margin:0 0 8px; color:var(--fg)}
 .sim-sub{font-size:13.5px; line-height:1.65; color:var(--fg-dim); margin:0; max-width:72ch}
 .sim-sub code{font-family:var(--font-mono); font-size:12.5px; background:var(--bg-3); padding:1px 5px; border-radius:4px; color:var(--orange)}
@@ -474,6 +474,10 @@ kbd{font-family:var(--font-mono); font-size:11px; background:var(--panel); borde
 .sim-counter.is-bad{border-color:var(--pink)}
 .sim-counter.is-bad .n{color:var(--pink)}
 .sim-grid{display:grid; grid-template-columns:minmax(0, 1fr) minmax(0, 1.4fr); gap:16px; min-width:0}
+@container (max-width: 620px){
+  .sim-grid{grid-template-columns:minmax(0, 1fr)}
+  .sim-w-lease{flex:1 1 100%; max-width:none}
+}
 .sim-col{min-width:0}
 .sim-h{font-family:var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:.09em; color:var(--comment); margin:0 0 10px; font-weight:600}
 .sim-queue{display:flex; flex-wrap:wrap; gap:6px; align-content:flex-start}
@@ -487,14 +491,15 @@ kbd{font-family:var(--font-mono); font-size:11px; background:var(--panel); borde
 .sim-task.is-failed{border-color:var(--pink); color:var(--pink); border-style:dashed}
 .sim-workers{display:flex; flex-direction:column; gap:8px}
 .sim-worker{
-  display:grid; grid-template-columns:44px 84px minmax(0, 1fr) 84px; gap:10px; align-items:center;
+  display:flex; flex-wrap:wrap; align-items:center; gap:5px 10px;
   font-family:var(--font-mono); font-size:12px; padding:9px 12px; min-width:0;
   border:1px solid var(--border); border-left-width:3px; border-radius:var(--radius); background:var(--bg-2);
 }
-.sim-w-id{font-weight:700; color:var(--fg)}
-.sim-w-status{font-size:11px; color:var(--comment)}
-.sim-w-task{color:var(--fg-dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0}
-.sim-w-lease{display:block; height:6px; background:var(--bg-3); border-radius:3px; overflow:hidden}
+.sim-w-id{font-weight:700; color:var(--fg); flex:none; width:26px}
+.sim-w-status{font-size:11px; color:var(--comment); flex:none; min-width:66px}
+.sim-w-task{color:var(--fg-dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1 1 108px; min-width:0}
+.sim-w-lease{display:block; height:6px; background:var(--bg-3); border-radius:3px; overflow:hidden; flex:1 1 72px; max-width:96px}
+.sim-worker > .sim-w-lease:nth-child(4){max-width:96px}
 .sim-w-lease i{display:block; height:100%; background:var(--blue); border-radius:3px}
 @media (prefers-reduced-motion: no-preference){
   /* Smooths the 10fps redraw into a continuous drain, and makes each heartbeat renewal read as a pulse. */
@@ -524,8 +529,6 @@ kbd{font-family:var(--font-mono); font-size:11px; background:var(--panel); borde
 .sim-log-row.k-sim{color:var(--comment)}
 @media (max-width:768px){
   .sim-grid{grid-template-columns:minmax(0, 1fr)}
-  .sim-worker{grid-template-columns:38px minmax(0, 1fr); grid-auto-rows:min-content; gap:4px 10px}
-  .sim-w-lease{grid-column:1 / -1}
   .readme-name{font-size:29px}
   .sim-btn{min-height:44px}
 }
