@@ -1,4 +1,4 @@
-# Sauraabh Mishra - IDE Portfolio
+# Saurabh Mishra - IDE Portfolio
 
 A personal portfolio styled as a VS Code-like IDE.
 Browse experience, projects, skills, and contact details by opening files, running terminal commands, or using the command palette.
@@ -28,19 +28,29 @@ Then open the printed URL in your browser.
 The site mirrors an editor.
 Use the sidebar, tabs, terminal, and palette the same way you would in VS Code.
 
+### Two ways to read it
+
+The site opens as an IDE. **Plain view** (top-right, or the `plain` command, or `?view=plain`)
+flattens everything into one scrollable résumé page with the PDF and contact details up top.
+The choice is remembered, and `?view=plain` is directly shareable.
+
 ### Explorer (sidebar)
 
 Click files in the left tree to open them as editor tabs.
 
 | Path | What you get |
 |------|----------------|
+| `README.md` | Landing page - hero, metrics, résumé/contact CTAs, and three things worth your time |
 | `about.md` | Bio, education, facts, résumé download |
 | `experience/history.git` | Career as a `git log --graph` commit timeline |
 | `experience/<role>.yaml` | Per-role detail (Capslock, Couchbase, …) |
+| `projects/sentinel-engine.sim` | **Interactive** durable-queue failure simulation - kill a worker, watch fencing tokens hold the invariant |
 | `projects/<name>.md` | Project write-ups with engineering decisions |
-| `skills.json` | Skills table by depth and where they were used |
+| `projects/also-built.md` | Smaller projects, kept short |
+| `skills.json` | Skills by depth and where they were used |
 | `profiles.md` | Coding profiles (Codeforces / LeetCode can show live data) |
-| `achievements.log` | Highlights and milestones |
+| `achievements.log` | Highlights and milestones, newest first |
+| `interview.md` | Questions I can go deep on, with answers |
 | `contact.sh` | Email, LinkedIn, GitHub, phone |
 
 Tips:
@@ -69,7 +79,8 @@ Press **`?`** anywhere (when not typing in an input) for the full overlay, or ru
 
 | Shortcut | Action |
 |----------|--------|
-| `Ctrl/Cmd + K` | Command palette |
+| `Ctrl/Cmd + K` | Command palette (jump to a file) |
+| `Ctrl/Cmd + Shift + F` | Search **inside** every file |
 | `Ctrl/Cmd + \`` | Toggle terminal |
 | `Ctrl/Cmd + W` | Close active tab |
 | `Ctrl/Cmd + Alt + Tab` | Cycle open tabs |
@@ -121,6 +132,11 @@ Examples: `open about.md`, `cat contact.sh`, `ls experience/`.
 | `github` | Opens GitHub profile in a new tab |
 | `refresh` | Force-refreshes live profile/repo data |
 | `shortcuts` | Opens the keyboard shortcuts overlay |
+| `sim` | Opens the durable-queue failure simulation |
+| `interview` | Opens `interview.md` |
+| `posts` | Lists published technical write-ups |
+| `plain` | Switches to the plain résumé view |
+| `npm run interview` | Yes, really |
 
 ### Themes
 
@@ -141,6 +157,7 @@ Theme also switches from the settings gear, status bar, or palette (`>theme …`
 | `git log` | Career history as a commit graph |
 | `git log --oneline` | Same history, one line per commit |
 | `git branch` | Roles listed as branches (`*` = current) |
+| `git blame` | Who is responsible for all this |
 
 ---
 
@@ -155,7 +172,7 @@ Same details here:
 | **LinkedIn** | [linkedin.com/in/2bsaurabh](https://www.linkedin.com/in/2bsaurabh/) |
 | **GitHub** | [github.com/CosmicSaaurabh](https://github.com/CosmicSaaurabh) |
 | **Phone** | +91 6393783010 |
-| **Résumé** | [`assets/Sauraabh_Mishra_Resume.pdf`](assets/Sauraabh_Mishra_Resume.pdf) |
+| **Résumé** | [`assets/Saurabh_Mishra_Resume.pdf`](assets/Saurabh_Mishra_Resume.pdf) |
 
 Open to backend / distributed-systems roles.
 Reach out by email or LinkedIn.
@@ -166,21 +183,28 @@ Reach out by email or LinkedIn.
 
 - Vanilla HTML / CSS / ES modules (no bundler, no React)
 - Themes via CSS custom properties (`Monokai`, `Dracula`, `Solarized Dark`, `GitHub Light`)
+- Self-hosted variable fonts (no third-party font CDN at runtime)
 - Optional live enrichment for GitHub / Codeforces / LeetCode with cache + static fallback
 - Deployable as static files on GitHub Pages
 
 ### Project layout
 
 ```
-index.html          IDE shell markup
-styles.css          Themes + layout
+index.html          IDE shell markup + SEO/OG tags + no-JS résumé fallback
+404.html            GitHub Pages not-found page
+styles.css          Themes + layout + print
 ide-shell.js        Tabs, tree, renderers, routing
+files.js            Canonical file registry + tree (shared by shell/terminal/palette)
 terminal.js         Integrated terminal + command registry
 palette.js          Ctrl/Cmd+K command palette
+search.js           Ctrl/Cmd+Shift+F content search
+sim-queue.js        Durable-queue failure simulation
+plainview.js        Flat résumé view
+tour.js             First-visit guided tour
 theme.js            Shared theme apply / persist
 livedata.js         Live data sources + cache
 file-contents.js    All portfolio content (single source of truth)
-assets/             Résumé PDF
+assets/             Résumé PDF, OG preview image, self-hosted fonts
 ```
 
 ---
@@ -188,5 +212,5 @@ assets/             Résumé PDF
 ## License
 
 Personal portfolio.
-Content and branding are © Sauraabh Mishra.
+Content and branding are © Saurabh Mishra.
 Feel free to fork the IDE shell idea for your own site - please don’t copy the résumé or bio verbatim.

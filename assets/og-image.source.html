@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face{font-family:'JetBrains Mono';src:url('fonts/jetbrains-mono-var.woff2') format('woff2');font-weight:100 800}
+  @font-face{font-family:'Inter';src:url('fonts/inter-var.woff2') format('woff2');font-weight:100 900}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{width:1200px;height:630px;overflow:hidden;background:#272822;font-family:'Inter',sans-serif}
+  .card{width:1200px;height:630px;display:flex;flex-direction:column;position:relative}
+  .chrome{height:44px;background:#1e1f1c;border-bottom:1px solid #3e3d32;display:flex;align-items:center;padding:0 20px;gap:9px}
+  .d{width:12px;height:12px;border-radius:50%}
+  .t{position:absolute;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:14px;color:#a1a191}
+  .body{flex:1;display:flex}
+  .rail{width:74px;background:#1e1f1c;border-right:1px solid #3e3d32;display:flex;flex-direction:column;align-items:center;padding-top:18px;gap:16px}
+  .ri{width:26px;height:26px;border-radius:5px;background:#3e3d32;opacity:.55}
+  .ri.on{background:#66d9ef;opacity:1}
+  .main{flex:1;padding:46px 54px 0}
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:19px;color:#75715e;letter-spacing:.02em;margin-bottom:18px}
+  h1{font-size:78px;line-height:1.02;font-weight:700;color:#f8f8f2;letter-spacing:-.022em;margin-bottom:12px}
+  .role{font-family:'JetBrains Mono',monospace;font-size:27px;color:#66d9ef;margin-bottom:30px}
+  .pitch{font-size:21px;line-height:1.5;color:#a1a191;max-width:830px;margin-bottom:34px}
+  .pitch b{color:#a6e22e;font-weight:600}
+  .metrics{display:flex;gap:16px}
+  .m{border:1px solid #3e3d32;border-radius:8px;background:#1e1f1c;padding:14px 22px;min-width:158px}
+  .mn{font-family:'JetBrains Mono',monospace;font-size:31px;font-weight:700;color:#f8f8f2;line-height:1.1}
+  .ml{font-size:14px;color:#75715e;margin-top:3px}
+  .bar{position:absolute;left:0;right:0;bottom:0;height:32px;background:#66d9ef;display:flex;align-items:center;padding:0 20px;gap:24px;
+       font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;color:#1e1f1c}
+  .bar .right{margin-left:auto;display:flex;gap:24px}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="chrome">
+    <span class="d" style="background:#ff5f56"></span>
+    <span class="d" style="background:#ffbd2e"></span>
+    <span class="d" style="background:#27c93f"></span>
+    <span class="t">saurabh-mishra — portfolio</span>
+  </div>
+  <div class="body">
+    <div class="rail">
+      <span class="ri on"></span><span class="ri"></span><span class="ri"></span>
+      <span class="ri"></span><span class="ri"></span><span class="ri"></span>
+    </div>
+    <div class="main">
+      <p class="eyebrow">SDE II @ Capslock · ex-Couchbase · 4+ years</p>
+      <h1>Saurabh Mishra</h1>
+      <p class="role">Backend Engineer — Distributed Systems</p>
+      <p class="pitch">Raft consensus and replica routing shipped inside Couchbase SDKs that enterprises run in production. A durable task queue that survives worker death with <b>zero duplicate execution</b>.</p>
+      <div class="metrics">
+        <div class="m"><div class="mn">10M+</div><div class="ml">users served</div></div>
+        <div class="m"><div class="mn">~10K/s</div><div class="ml">SDK ops, zero failures</div></div>
+        <div class="m"><div class="mn">2000+</div><div class="ml">DS &amp; algo problems</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="bar">
+    <span>⎇ main</span><span>0 ⚠ 0</span>
+    <span class="right"><span>Simulation</span><span>UTF-8</span><span>Monokai</span></span>
+  </div>
+</div>
+</body>
+</html>

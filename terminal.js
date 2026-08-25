@@ -4,7 +4,8 @@
 // without any circular dependency. Command handlers receive (args, ctx) where ctx carries
 // whatever DOM/state hooks they need — no closures over initTerminal's locals anymore.
 
-import { about, experience, projects, skills, achievements, contact, resumeHref, codingProfiles } from './file-contents.js';
+import { about, experience, projects, skills, achievements, contact, resumeHref, codingProfiles, readme, interview, posts } from './file-contents.js';
+import { FILES, DIRS, fileByPathOrName, rootListing } from './files.js';
 import { THEMES, applyTheme, getCurrentTheme } from './theme.js';
 import { get as getLiveData, refresh as refreshLiveData } from './livedata.js';
 
@@ -13,21 +14,7 @@ const HISTORY_KEY = 'ide.term.history.v1';
 const MAX_LINES = 500;
 const MAX_HISTORY = 50;
 
-/* ---------- virtual file listing, derived from the same content arrays ide-shell uses ---------- */
-const FILES = [
-  { id: 'about', name: 'about.md', path: 'about.md' },
-  ...experience.map((e) => ({ id: e.id, name: `${e.id}.yaml`, path: `experience/${e.id}.yaml` })),
-  ...projects.map((p) => ({ id: p.id, name: `${p.id}.md`, path: `projects/${p.id}.md` })),
-  { id: 'skills', name: 'skills.json', path: 'skills.json' },
-  { id: 'profiles', name: 'profiles.md', path: 'profiles.md' },
-  { id: 'history', name: 'history.git', path: 'experience/history.git' },
-  { id: 'achievements', name: 'achievements.log', path: 'achievements.log' },
-  { id: 'contact', name: 'contact.sh', path: 'contact.sh' },
-];
-const fileByPathOrName = (arg) => {
-  const clean = arg.replace(/^\.\//, '');
-  return FILES.find((f) => f.path === clean || f.name === clean || f.id === clean);
-};
+/* file listing now lives in files.js (single source shared with ide-shell + palette) */
 function yamlText(e) {
   return `company: "${e.company}"\nrole: "${e.role}"\nperiod: "${e.period}"\nlocation: "${e.location}"\nhighlights:\n${e.highlights.map((h) => `  - "${h.body}"`).join('\n')}`;
 }
@@ -71,27 +58,15 @@ export const REGISTRY = {
   help: {
     description: 'List available commands', group: 'core',
     run: () => {
-      const groups = {
-        core: ['help', 'clear', 'history', 'echo', 'pwd', 'date'],
-        navigation: ['ls [path]', 'cat <file>', 'open <file>'],
-        content: ['whoami', 'experience', 'projects', 'skills', 'profiles', 'resume', 'contact', 'github', 'theme <name>', 'refresh', 'git log', 'git branch', 'shortcuts'],
-      };
-      const descs = {
-        help: 'show this list', clear: 'clear the terminal', history: 'list past commands',
-        echo: 'print arguments back', pwd: 'print working directory', date: 'print current date/time',
-        'ls [path]': 'list files (try: ls, ls projects/)', 'cat <file>': 'print a file\'s raw content',
-        'open <file>': 'open a file as an editor tab',
-        whoami: 'quick intro', experience: 'work history timeline', projects: 'one line per project',
-        skills: 'skills as a table', resume: 'download the résumé PDF', contact: 'email / LinkedIn / GitHub',
-        github: 'open GitHub profile in a new tab', 'theme <name>': 'switch editor theme (monokai/dracula/solarized-dark/github-light)',
-        profiles: 'coding-profile ratings, live rows marked', refresh: 'force-refresh live data',
-        'git log': 'career history as a commit graph', 'git branch': 'roles as git branches',
-        shortcuts: 'open the keyboard shortcuts overlay',
-      };
+      // Derived from REGISTRY: a new command shows up here without a second edit.
+      const order = ['core', 'navigation', 'content'];
       const lines = [];
-      Object.entries(groups).forEach(([g, cmds]) => {
+      order.forEach((g) => {
+        const cmds = Object.entries(REGISTRY).filter(([, v]) => v.group === g && !v.hidden);
+        if (!cmds.length) return;
         lines.push(`<span class="tok-comment">## ${g}</span>`);
-        cmds.forEach((c) => lines.push(`  <span class="tok-fn">${esc(c)}</span> — ${esc(descs[c])}`));
+        const width = Math.max(...cmds.map(([k, v]) => (v.usage || k).length));
+        cmds.forEach(([k, v]) => lines.push(`  <span class="tok-fn">${esc((v.usage || k).padEnd(width, ' '))}</span>  ${esc(v.description)}`));
       });
       return lines;
     },
@@ -101,14 +76,15 @@ export const REGISTRY = {
     description: 'List past commands', group: 'core',
     run: (args, ctx) => ctx.getHistory().map((h, i) => `${String(i + 1).padStart(3, ' ')}  ${esc(h)}`),
   },
-  echo: { description: 'Print arguments back', group: 'core', run: (args) => [esc(args.join(' '))] },
+  echo: { usage: 'echo <text>', description: 'Print arguments back', group: 'core', run: (args) => [esc(args.join(' '))] },
   pwd: { description: 'Print working directory', group: 'core', run: () => ['~/portfolio'] },
   date: { description: 'Print current date/time', group: 'core', run: () => [new Date().toString()] },
   ls: {
-    description: 'List files', group: 'navigation',
+    usage: 'ls [path]', description: 'List files', group: 'navigation',
     run: (args) => {
       const raw = (args[0] || '').replace(/\/$/, '');
-      if (!raw) return ['<span class="tok-key">about.md</span>', '<span class="tok-key">experience/</span>', '<span class="tok-key">projects/</span>', '<span class="tok-key">skills.json</span>', '<span class="tok-key">achievements.log</span>', '<span class="tok-key">contact.sh</span>'];
+      // Derived, not hardcoded — the old literal list had already drifted (no profiles.md).
+      if (!raw) return rootListing().map((n) => `<span class="tok-key">${esc(n)}</span>`);
       const singleFile = fileByPathOrName(args[0]);
       const inDir = FILES.filter((f) => f.path.startsWith(`${raw}/`));
       if (inDir.length) return inDir.map((f) => `<span class="tok-plain">${esc(f.name)}</span>`);
@@ -117,7 +93,7 @@ export const REGISTRY = {
     },
   },
   cat: {
-    description: "Print a file's raw content", group: 'navigation',
+    usage: 'cat <file>', description: "Print a file's raw content", group: 'navigation',
     run: (args) => {
       if (!args[0]) return ['usage: cat <file>'];
       const f = fileByPathOrName(args[0]);
@@ -126,7 +102,7 @@ export const REGISTRY = {
     },
   },
   open: {
-    description: 'Open a file as an editor tab', group: 'navigation',
+    usage: 'open <file>', description: 'Open a file as an editor tab', group: 'navigation',
     run: (args, ctx) => {
       if (!args[0]) return ['usage: open <file>'];
       const f = fileByPathOrName(args[0]);
@@ -139,10 +115,10 @@ export const REGISTRY = {
   whoami: {
     description: 'Quick intro', group: 'content',
     run: () => [
-      '<span class="tok-fn">Sauraabh Mishra</span>',
-      'Backend Engineer — Distributed Systems',
+      `<span class="tok-fn">${esc(readme.name)}</span>`,
+      esc(readme.title),
       'Focus: distributed systems, SDKs, cloud-native backend infra.',
-      "Currently at Capslock Marketplaces; previously 3+ years at Couchbase.",
+      `Currently at ${esc(experience[0].company)}; previously ${esc(experience[1].company)} (${esc(experience[1].period)}).`,
     ],
   },
   experience: {
@@ -151,7 +127,11 @@ export const REGISTRY = {
   },
   projects: {
     description: 'One line per project', group: 'content',
-    run: () => projects.map((p) => `<span class="tok-fn">${esc(p.id)}</span>  <span class="tok-comment">[${p.tags.slice(0, 3).map(esc).join(', ')}]</span>  ${esc(p.subtitle)}`),
+    run: () => [
+      ...projects.filter((p) => p.featured).map((p) => `<span class="tok-fn">${esc(p.id)}</span>  <span class="tok-comment">[${p.tags.slice(0, 3).map(esc).join(', ')}]</span>  ${esc(p.subtitle)}`),
+      '<span class="tok-comment">## also built</span>',
+      ...projects.filter((p) => !p.featured).map((p) => `<span class="tok-plain">${esc(p.id)}</span>  <span class="tok-comment">${esc(p.subtitle)}</span>`),
+    ],
   },
   skills: {
     description: 'Skills as a table', group: 'content',
@@ -185,7 +165,7 @@ export const REGISTRY = {
     run: () => { window.open(contact.github, '_blank', 'noopener'); return ['Opening GitHub…']; },
   },
   theme: {
-    description: 'Switch editor theme', group: 'content',
+    usage: 'theme [name]', description: 'Switch editor theme', group: 'content',
     run: (args) => {
       if (!args[0]) {
         const current = getCurrentTheme();
@@ -216,6 +196,47 @@ export const REGISTRY = {
       return ['Refreshing live data…', ...lines];
     },
   },
+  sim: {
+    description: 'open the durable-queue failure simulation', group: 'content',
+    run: (args, ctx) => { ctx.openFile('sentinel-sim'); return ['<span class="tok-comment">opening projects/sentinel-engine.sim — try "Kill a worker"</span>']; },
+  },
+  interview: {
+    description: 'questions I can go deep on, with answers', group: 'content',
+    run: (args, ctx) => { ctx.openFile('interview'); return ['<span class="tok-comment">opening interview.md</span>']; },
+  },
+  posts: {
+    description: 'technical write-ups', group: 'content',
+    run: () => {
+      const live = posts.filter((p) => p.status === 'published');
+      if (!live.length) return ['<span class="tok-comment">no posts published yet — drafts are in progress.</span>'];
+      return live.map((p) => `<span class="tok-fn">${esc(p.id)}</span>  <span class="tok-comment">${esc(p.date)} · ${p.readingMinutes} min</span>  ${esc(p.title)}`);
+    },
+  },
+  plain: {
+    description: 'switch to the plain résumé view', group: 'content',
+    run: () => {
+      const u = new URL(location.href);
+      u.searchParams.set('view', 'plain');
+      location.href = u.toString();
+      return ['<span class="tok-comment">switching to plain view…</span>'];
+    },
+  },
+  npm: {
+    description: 'try: npm run interview', group: 'content', usage: 'npm run <script>',
+    run: (args, ctx) => {
+      if (args[0] === 'run' && args[1] === 'interview') {
+        ctx.openFile('interview');
+        return ['<span class="tok-comment">> portfolio@1.0.0 interview</span>', '<span class="tok-comment">> open interview.md</span>', '', 'opening interview.md'];
+      }
+      if (args[0] === 'run' && args[1] === 'build') {
+        return ['<span class="tok-comment">There is no build step. That is the point.</span>', 'Static HTML, CSS and ES modules. Deploys by pushing to main.'];
+      }
+      if (args[0] === 'install' || args[0] === 'i') {
+        return ['<span class="tok-comment">up to date, audited 0 packages in 0ms</span>', '', '<span class="tok-fn">found 0 vulnerabilities</span>', '<span class="tok-comment">(zero dependencies. also the point.)</span>'];
+      }
+      return ['Available: <span class="tok-fn">npm run interview</span>, <span class="tok-fn">npm run build</span>, <span class="tok-fn">npm install</span>'];
+    },
+  },
   shortcuts: {
     description: 'Open the keyboard shortcuts overlay', group: 'content',
     run: (args, c) => { c.openShortcuts && c.openShortcuts(); return ['Opening shortcuts…']; },
@@ -224,15 +245,25 @@ export const REGISTRY = {
     description: 'git log / git log --oneline / git branch', group: 'content',
     run: (args) => {
       const sub = args[0];
+      if (sub === 'blame') {
+        return [
+          `<span class="tok-comment">${esc(commitHash(contact.email))} (${esc(readme.name)} 2018-08-01) 1)</span> started writing code`,
+          `<span class="tok-comment">${esc(commitHash('couchbase'))} (${esc(readme.name)} 2022-08-01) 2)</span> discovered distributed systems are mostly about failure`,
+          `<span class="tok-comment">${esc(commitHash('sentinel'))} (${esc(readme.name)} 2026-01-01) 3)</span> built a task queue to prove it`,
+          '',
+          '<span class="tok-comment">blame assigned. no further investigation required.</span>',
+        ];
+      }
       const list = buildCommitList();
-      if (!sub || (sub !== 'log' && sub !== 'branch')) {
+      if (!sub || (sub !== 'log' && sub !== 'branch' && sub !== 'blame')) {
         return [
           `git: '${esc(sub || '')}'${sub ? ' is not a git command. ' : ' '}See 'git --help'.`.trim(),
           '',
           '<span class="tok-comment">Supported here:</span>',
-          '  <span class="tok-fn">git log</span>            — commit graph of Sauraabh\'s career',
+          '  <span class="tok-fn">git log</span>            — commit graph of Saurabh\'s career',
           '  <span class="tok-fn">git log --oneline</span>  — one line per commit, no graph',
           '  <span class="tok-fn">git branch</span>         — list roles as branches',
+          '  <span class="tok-fn">git blame</span>          — who is responsible for all this',
         ];
       }
       if (sub === 'branch') {
@@ -259,13 +290,13 @@ export const REGISTRY = {
     run: (args) => {
       if (args.join(' ') === 'hire-me') {
         return [
-          '[sudo] password for sauraabh: ********',
+          '[sudo] password for saurabh: ********',
           '<span class="tok-fn">Access granted.</span>',
           'Initiating hire sequence...',
           '✓ Résumé compiled',
           '✓ Skills verified',
           '✓ References checked',
-          'Contact Sauraabh Mishra to complete hiring:',
+          'Contact Saurabh Mishra to complete hiring:',
           `  <a href="mailto:${contact.email}">${esc(contact.email)}</a>`,
           `  <a href="${contact.linkedin}" target="_blank" rel="noopener">${esc(contact.linkedin)}</a>`,
         ];
@@ -414,7 +445,7 @@ export function initTerminal(ctx) {
       return [];
     }
     if (!['ls', 'cat', 'open'].includes(cmdName)) return [];
-    const dirCandidates = ['experience/', 'projects/'].filter((d) => d.startsWith(last));
+    const dirCandidates = DIRS.filter((d) => d.startsWith(last));
     const pathCandidates = FILES.map((f) => f.path).filter((p) => p.startsWith(last));
     const nameCandidates = last.includes('/') ? [] : FILES.map((f) => f.name).filter((n) => n.startsWith(last));
     return Array.from(new Set([...dirCandidates, ...pathCandidates, ...nameCandidates]));

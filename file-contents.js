@@ -2,7 +2,7 @@
 // Consumed by ide-shell.js (editor renderers) and, later, terminal.js (Phase 2).
 
 export const about = {
-  markdown: `# Sauraabh Mishra
+  markdown: `# Saurabh Mishra
 ### Backend Engineer — Distributed Systems
 
 Backend Software Engineer with 4+ years building large-scale, cloud-native backend systems in Java, Golang, and distributed architectures. Currently scaling backend infrastructure for 10M+ users at Capslock Marketplaces, redesigning services around Kafka-driven async processing and Redis/Postgres caching. Previously shipped performance-critical Couchbase SDK enhancements sustaining ~10K ops/sec with zero failures.
@@ -40,7 +40,7 @@ I'm genuinely restless about learning: I'm currently deepening my AI/ML and gene
 Apr 2022 – May 2022
 - Volunteered as a Django developer supporting Shiksha Sopan's education-access initiatives out of IIT Kanpur.
 
-[Download résumé](assets/Sauraabh_Mishra_Resume.pdf)`,
+[Download résumé](assets/Saurabh_Mishra_Resume.pdf)`,
 };
 
 export const experience = [
@@ -98,7 +98,7 @@ export const experience = [
 
 export const projects = [
   {
-    id: "sentinel-engine", title: "Sentinel Engine", subtitle: "Distributed Workflow Orchestration Engine",
+    id: "sentinel-engine", featured: true, title: "Sentinel Engine", subtitle: "Distributed Workflow Orchestration Engine",
     timeframe: "Personal project", github: "https://github.com/CosmicSaaurabh/sentinel-engine", repoStatus: "public",
     language: { name: "Java", color: "#e76f00" },
     tags: ["Java 21", "Spring Boot 3", "PostgreSQL", "gRPC", "Protobuf", "Docker", "OpenTelemetry", "Prometheus", "Grafana", "Testcontainers"],
@@ -143,7 +143,7 @@ export const projects = [
     ],
   },
   {
-    id: "distributed-kv-store", title: "Distributed Key-Value Store", subtitle: "Redis-compatible store in Go + Rust",
+    id: "distributed-kv-store", featured: true, title: "Distributed Key-Value Store", subtitle: "Redis-compatible store in Go + Rust",
     timeframe: "Personal project", github: "https://github.com/CosmicSaaurabh/redis-from-scratch", repoStatus: "public",
     language: { name: "Go", color: "#00ADD8" },
     tags: ["Go", "Rust", "gRPC", "Raft", "RESP Protocol", "LSM-Tree", "Protobuf", "Docker", "Kubernetes"],
@@ -187,7 +187,7 @@ export const projects = [
     ],
   },
   {
-    id: "ecommerce-platform", title: "Microservices E-Commerce Platform", subtitle: "Clean Architecture + CQRS across independent services",
+    id: "ecommerce-platform", featured: true, title: "Microservices E-Commerce Platform", subtitle: "Clean Architecture + CQRS across independent services",
     timeframe: "Personal project", github: "https://github.com/Softogram/mvc-ecomm-net", repoStatus: "public",
     language: { name: "C#", color: "#512BD4" },
     tags: [".NET", "Kubernetes", "RabbitMQ", "gRPC", "MongoDB", "PostgreSQL", "Redis", "Angular", "Elasticsearch"],
@@ -232,7 +232,7 @@ export const projects = [
     ],
   },
   {
-    id: "splitwise", title: "Splitwise-Style Expense Sharing", subtitle: "Settlement-minimizing bill splitter",
+    id: "splitwise", featured: false, title: "Splitwise-Style Expense Sharing", subtitle: "Settlement-minimizing bill splitter",
     timeframe: "Personal project", github: "https://github.com/CosmicSaaurabh/splitwise-app", repoStatus: "public",
     language: { name: "Java", color: "#e76f00" },
     tags: ["Java", "Spring Boot", "PostgreSQL", "Algorithms", "JWT"],
@@ -274,7 +274,7 @@ export const projects = [
     ],
   },
   {
-    id: "wediscusscp", title: "WeDiscussCP", subtitle: "A blogging & discussion platform for competitive programmers",
+    id: "wediscusscp", featured: false, title: "WeDiscussCP", subtitle: "A blogging & discussion platform for competitive programmers",
     timeframe: "Personal project", github: "https://github.com/CosmicSaaurabh/WediscussCp", repoStatus: "public",
     language: { name: "PHP", color: "#4F5B93" },
     tags: ["PHP", "MySQL", "Bootstrap", "HTML", "CSS"],
@@ -314,7 +314,7 @@ export const projects = [
     ],
   },
   {
-    id: "ctrlbudget", title: "CtrlBudget", subtitle: "Personal budget & expense management app",
+    id: "ctrlbudget", featured: false, title: "CtrlBudget", subtitle: "Personal budget & expense management app",
     timeframe: "Personal project", github: "https://github.com/CosmicSaaurabh/CtRlbudget", repoStatus: "public",
     language: { name: "Python", color: "#3572A5" },
     tags: ["Python", "Django", "PostgreSQL"],
@@ -372,6 +372,8 @@ export const skills = {
   cloud_devops: [
     { name: "Kubernetes / Docker", depth: "proficient", usedAt: ["E-Commerce platform", "Distributed KV Store"], blurb: "Deployment, scaling, and sharding for both personal systems projects." },
     { name: "AWS / Azure", depth: "proficient", usedAt: ["Couchbase", "Capslock Marketplaces"], blurb: "Cloud-native deployment targets for SDKs and backend services." },
+    { name: "CI/CD Pipelines", depth: "proficient", usedAt: ["Couchbase", "Personal projects"], blurb: "Build, test, and release pipelines for multi-language SDK artifacts and containerised services." },
+    { name: "Terraform / IaC", depth: "working", usedAt: ["Couchbase", "Personal projects"], blurb: "Declarative provisioning of cloud infrastructure and test environments rather than console clicks." },
   ],
   databases: [
     { name: "Postgres / MySQL", depth: "proficient", usedAt: ["Sentinel Engine", "Splitwise"], blurb: "Postgres as a durable task queue (SELECT FOR UPDATE SKIP LOCKED) and relational data for expense tracking." },
@@ -413,4 +415,238 @@ export const contact = {
   phone: "+91 6393783010",
 };
 
-export const resumeHref = "assets/Sauraabh_Mishra_Resume.pdf";
+export const resumeHref = "assets/Saurabh_Mishra_Resume.pdf";
+
+// ---------------------------------------------------------------------------
+// Landing view (README.md). Structured rather than markdown because it renders
+// as hero + metric tiles + start-here cards, not as prose.
+// ---------------------------------------------------------------------------
+export const readme = {
+  name: "Saurabh Mishra",
+  title: "Backend Engineer — Distributed Systems",
+  now: "SDE II @ Capslock Marketplaces",
+  prev: "ex-Couchbase",
+  years: "4+ years",
+  pitch: "I build backend systems that stay correct when things fail. Raft consensus and replica routing shipped inside Couchbase SDKs that enterprises run in production, and a Postgres-backed durable task queue that survives worker death with zero duplicate execution.",
+  metrics: [
+    { value: "10M+", label: "users served" },
+    { value: "~10K/s", label: "SDK ops, zero failures" },
+    { value: "4+ yrs", label: "backend engineering" },
+    { value: "2000+", label: "DS & algo problems" },
+  ],
+  startHere: [
+    {
+      open: "sentinel-sim",
+      kicker: "Interactive",
+      title: "Kill a worker, watch the invariant hold",
+      blurb: "A live simulation of my durable task queue. Kill a worker mid-task, watch the lease expire, the reaper requeue it, and the zombie's late write get rejected by a stale fence token. Duplicate executions never leaves zero.",
+    },
+    {
+      open: "history",
+      kicker: "2 min read",
+      title: "My career as a git commit graph",
+      blurb: "Five roles rendered as git log --graph, one commit per thing I actually shipped. Capslock is the unmerged HEAD branch.",
+    },
+    {
+      open: "sentinel-engine",
+      kicker: "Deep dive",
+      title: "Sentinel Engine",
+      blurb: "A Temporal-style durable workflow engine. Postgres queue via SELECT FOR UPDATE SKIP LOCKED, DAG scheduler with cycle detection, lease-based recovery with fencing tokens.",
+    },
+  ],
+  drive: [
+    { keys: "Ctrl/Cmd + K", what: "command palette — jump to any file" },
+    { keys: "Ctrl/Cmd + Shift + F", what: "search inside every file" },
+    { keys: "Ctrl/Cmd + `", what: "terminal — try help, or git log" },
+    { keys: "?", what: "all keyboard shortcuts" },
+  ],
+};
+
+// ---------------------------------------------------------------------------
+// interview.md — pre-loads the questions a reviewer is already forming.
+// ---------------------------------------------------------------------------
+export const interview = {
+  intro: "Things I can go deep on without notes. If you're screening me, these are the fastest routes to a real signal.",
+  topics: [
+    {
+      q: "Why Postgres for a task queue instead of Kafka or Redis?",
+      a: "Because the hard requirement was effectively-once execution with transactional handoff, not throughput. SELECT FOR UPDATE SKIP LOCKED lets a worker claim a row and commit its side effects in the same transaction, so a crash between claim and commit is a rollback rather than a lost task. Kafka gives me ordering and throughput I did not need, and at-least-once semantics I would then have to de-duplicate anyway.",
+      open: "sentinel-engine",
+    },
+    {
+      q: "A worker hangs, its lease expires, another worker picks up the task — and then the first one wakes up and writes. What stops the duplicate?",
+      a: "A monotonically increasing fence token issued with every lease. The late write carries the old token, the store compares it against the current one, and rejects anything stale. Lease expiry alone is not enough because it only bounds how long you wait, not what a zombie does when it returns.",
+      open: "sentinel-sim",
+    },
+    {
+      q: "What was actually hard about the Couchbase SDK work?",
+      a: "Network behaviour that only appears in customer environments. Private-endpoint deployments across Kubernetes and multiple clouds broke the SDK's connection-resolution assumptions and produced timeout escalations we could not reproduce locally. I built a proxy between the SDK and the server to intercept, manipulate, and replay real request traffic, which turned an unreproducible customer report into a test case.",
+      open: "couchbase",
+    },
+    {
+      q: "Why put the storage engine of your KV store in Rust when the rest is Go?",
+      a: "To keep the garbage collector off the write path. Go is a good fit for the coordination and Raft layers where I want fast iteration and cheap concurrency, but tail latency on writes was being shaped by GC pauses. Rust gives deterministic memory behaviour for the WAL, LSM-tree, and compaction, and the gRPC bridge between them is a boundary I control.",
+      open: "distributed-kv-store",
+    },
+    {
+      q: "You moved a service from synchronous to Kafka-driven async. What broke?",
+      a: "The easy part was publishing events. The hard part was that async processing turned a request-scoped failure into a silent backlog — consumer lag became the real health signal, not error rate. I scaled topic partitions to widen consumer parallelism and added Redis caching in front of Postgres so the read path stopped competing with the write path for the same connections.",
+      open: "capslock",
+    },
+    {
+      q: "What are you weakest at right now?",
+      a: "Frontend depth and formal ML. I can build and ship a UI — this site is hand-written vanilla JS with no build step — but I would not claim frontend as a specialisation. On ML I am deliberately mid-journey: the part-time M.Sc. at BITS Pilani is me closing that gap on purpose rather than pretending it is already closed.",
+    },
+  ],
+};
+
+// ---------------------------------------------------------------------------
+// posts/ — technical write-ups.
+//
+// Only posts with status "published" appear in the file tree, the palette, the
+// terminal and the plain view. The three below ship as "draft" on purpose: an
+// outline visible on a live hiring portfolio is worse than no post at all.
+// Write the prose, flip status to "published", and the post appears everywhere.
+// ---------------------------------------------------------------------------
+export const posts = [
+  {
+    id: "skip-locked-vs-advisory-locks",
+    status: "draft",
+    title: "Why SKIP LOCKED beats advisory locks for a task queue",
+    date: "2026-08-25",
+    readingMinutes: 7,
+    summary: "Both let workers claim work without stepping on each other. Only one of them degrades gracefully at 50 concurrent workers.",
+    markdown: `# Why SKIP LOCKED beats advisory locks for a task queue
+
+## The problem in one sentence
+
+N workers, one table, and every task must be executed by exactly one of them.
+
+## What advisory locks look like first
+
+- \`pg_try_advisory_lock(task_id)\` reads as the obvious answer: cheap, non-blocking, explicit.
+- Describe the naive loop: SELECT candidate rows, try to lock each one, skip the ones you lose.
+- **The point to make here:** the lock lives outside the transaction and outside the row. That decoupling is what eventually bites.
+
+## Where it degrades
+
+- Every worker scans the same head of the queue, so contention rises with worker count rather than staying flat.
+- Advisory locks are session-scoped. Describe what actually happens to a held lock when a connection is recycled by a pooler.
+- The lock and the row can disagree. Explain the window where a task is locked but its state column says something else.
+
+## What SKIP LOCKED does differently
+
+- \`SELECT ... FOR UPDATE SKIP LOCKED LIMIT n\` pushes the skipping into the executor: contending workers get *different rows*, not failed lock attempts.
+- The lock is the row lock, held by the transaction, released by commit or rollback. There is no second thing to keep in sync.
+- Show the actual query used in Sentinel Engine.
+
+## The property that made the decision
+
+Claim and side effect commit in the same transaction, so a crash between them is a rollback rather than a lost task.
+
+> Write the concrete failure walk-through here: worker claims task, starts work, process is killed. What the row looks like from another worker's perspective at each step.
+
+## What this still does not give you
+
+Lease expiry hands the task to a new worker, but it does nothing about the old worker waking up and writing.
+That needs fencing tokens, which is the next post.
+
+## When I would not use this
+
+- Throughput far beyond what one Postgres can absorb.
+- Strict ordering requirements, where a log is the better shape.
+- Fan-out to many independent consumers, which is a Kafka problem, not a queue problem.
+`,
+  },
+  {
+    id: "fencing-tokens",
+    status: "draft",
+    title: "Fencing tokens make a zombie worker harmless",
+    date: "2026-08-25",
+    readingMinutes: 6,
+    summary: "Lease expiry bounds how long you wait for a dead worker. It does not bound what that worker does when it comes back.",
+    markdown: `# Fencing tokens make a zombie worker harmless
+
+## The race that leases alone do not close
+
+1. Worker A claims task T with a 30s lease.
+2. Worker A stalls — GC pause, blocked syscall, network partition. Pick one and describe it concretely.
+3. The lease expires. The reaper requeues T. Worker B claims it and starts working.
+4. Worker A wakes up, believes it still owns T, and writes.
+
+> The key sentence to land: at step 4 nothing about A's local state is wrong. It has no way to know time passed.
+
+## Why "just check the lease before writing" does not work
+
+- Explain the check-then-act window: the lease can expire between the check and the write.
+- Any fix that relies on A noticing its own failure is unsound, because a partitioned A cannot notice anything.
+
+## The fix: make the *receiver* reject stale writes
+
+- Every lease grant increments a monotonic counter for that task.
+- The token travels with the worker and is presented on every write.
+- The store compares the presented token to the current one and rejects anything lower.
+
+The authority moves from the worker to the resource. A never learns it was fenced, and it does not need to.
+
+## Where the token has to live
+
+- Same transactional store as the task state, or the comparison itself races.
+- Note what this rules out: a token cached in application memory, or held in a store that can roll back independently.
+
+## Seeing it happen
+
+The simulation on this site does exactly this — kill a worker, watch the reaper requeue, then watch the late write get rejected with \`fence 4 < current 5\`.
+
+> Add the real log line from your implementation here.
+
+## Prior art worth citing
+
+Martin Kleppmann's fencing-token argument in the "How to do distributed locking" post, and the Chubby paper's sequencers.
+Say what you took from each and where your implementation differs.
+`,
+  },
+  {
+    id: "zone-aware-replica-routing",
+    status: "draft",
+    title: "Zone-aware replica routing in a database SDK",
+    date: "2026-08-25",
+    readingMinutes: 8,
+    summary: "Cross-zone reads are correct, cheap to write, and quietly expensive. Here is what changed when the SDK started caring where it was.",
+    markdown: `# Zone-aware replica routing in a database SDK
+
+## The default behaviour and why it looks fine
+
+- An SDK picks a replica. Any replica satisfies the read. Correctness is not in question.
+- Describe what the latency distribution actually looked like before, and how cross-zone hops showed up in the tail rather than the mean.
+
+## Why the SDK is the right layer for this
+
+- The server does not know which zone the *caller* is in.
+- A proxy adds a hop to solve a problem caused by hops.
+- **The argument to make:** the client is the only participant that knows both its own location and the full replica topology.
+
+## What the SDK has to learn
+
+- Its own zone, and how it discovers that across cloud providers and Kubernetes.
+- The topology, and how often that is allowed to be stale.
+- What to do when the local replica is unavailable, which is where the interesting design decisions are.
+
+## The failure modes this introduces
+
+Preferring local replicas is a load-balancing change, not just a latency change.
+
+- Hot-zone skew when clients are unevenly distributed.
+- Stale topology after a rebalance sending traffic to a node that no longer holds the replica.
+- Describe the fallback path and how quickly it gives up.
+
+## Measuring it honestly
+
+> Put the real before/after numbers here, and be explicit about what you measured: p50 vs p99, which workload, which topology.
+
+## What I would do differently
+
+Leave this section in. It is the part interviewers actually engage with.
+`,
+  },
+];
