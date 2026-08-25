@@ -451,6 +451,7 @@ kbd{font-family:var(--font-mono); font-size:11px; background:var(--panel); borde
 .sim-task sup{font-size:9px; color:var(--orange); margin-left:2px}
 .sim-task.is-leased{border-color:var(--blue); color:var(--blue)}
 .sim-task.is-done{border-color:transparent; background:transparent; color:var(--comment); text-decoration:line-through}
+.sim-task.is-failed{border-color:var(--pink); color:var(--pink); border-style:dashed}
 .sim-workers{display:flex; flex-direction:column; gap:8px}
 .sim-worker{
   display:grid; grid-template-columns:44px 84px minmax(0, 1fr) 84px; gap:10px; align-items:center;
@@ -462,6 +463,10 @@ kbd{font-family:var(--font-mono); font-size:11px; background:var(--panel); borde
 .sim-w-task{color:var(--fg-dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0}
 .sim-w-lease{display:block; height:6px; background:var(--bg-3); border-radius:3px; overflow:hidden}
 .sim-w-lease i{display:block; height:100%; background:var(--blue); border-radius:3px}
+@media (prefers-reduced-motion: no-preference){
+  /* Smooths the 10fps redraw into a continuous drain, and makes each heartbeat renewal read as a pulse. */
+  .sim-w-lease i{transition:width 140ms linear, background var(--transition-fast)}
+}
 .sim-w-lease i.low{background:var(--orange)}
 .sim-worker.is-idle{border-left-color:var(--border)}
 .sim-worker.is-run{border-left-color:var(--green)}
@@ -481,6 +486,7 @@ kbd{font-family:var(--font-mono); font-size:11px; background:var(--panel); borde
 .sim-log-row.k-kill,.sim-log-row.k-dupe{color:var(--pink); font-weight:600}
 .sim-log-row.k-part,.sim-log-row.k-drop,.sim-log-row.k-wake{color:var(--orange)}
 .sim-log-row.k-fence{color:var(--orange); font-weight:700}
+.sim-log-row.k-dead{color:var(--pink)}
 .sim-log-row.k-sim{color:var(--comment)}
 @media (max-width:768px){
   .sim-grid{grid-template-columns:minmax(0, 1fr)}

@@ -21,6 +21,7 @@ const WORK_MAX = 6200;
 const RECOVER_MS = LEASE_MS + 1600;
 const STALL_MS = LEASE_MS + 1200;  // long enough that the lease actually lapses
 const MAX_LOG = 60;
+const MAX_ATTEMPTS = 3;    // past this, a task is dead-lettered rather than retried forever
 
 const rand = (lo, hi) => lo + Math.random() * (hi - lo);
 const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -34,7 +35,7 @@ export function mountSim(host) {
   let tasks = [];       // {id, state:'pending'|'leased'|'done', fence, attempts}
   let workers = [];
   let log = [];
-  let counters = { completed: 0, requeued: 0, fenced: 0, duplicates: 0 };
+  let counters = { completed: 0, requeued: 0, fenced: 0, duplicates: 0, failed: 0 };
   let timer = null;
   let paused = false;
   let speed = 1;
@@ -50,7 +51,7 @@ export function mountSim(host) {
       heartbeat: HEARTBEAT_MS, work: 0, workTotal: 0, recoverIn: 0, partitioned: false, stalledFor: 0,
     }));
     log = [];
-    counters = { completed: 0, requeued: 0, fenced: 0, duplicates: 0 };
+    counters = { completed: 0, requeued: 0, fenced: 0, duplicates: 0, failed: 0 };
     say('sim', `queue ready — 7 tasks, ${workerCount} workers`);
     draw();
   }
@@ -120,10 +121,18 @@ export function mountSim(host) {
       if (t.state !== 'leased') return;
       t.lease -= dt;
       if (t.lease > 0) return;
-      counters.requeued += 1;
-      say('reap', `reaper: lease on ${t.id} expired → requeued (held by ${t.leasedBy})`);
-      t.state = 'pending';
+      const heldBy = t.leasedBy;
       t.leasedBy = null;
+      if (t.attempts >= MAX_ATTEMPTS) {
+        // Retrying a poison task forever starves the queue; park it for a human instead.
+        t.state = 'failed';
+        counters.failed += 1;
+        say('dead', `${t.id} exceeded ${MAX_ATTEMPTS} attempts → dead-letter queue`);
+      } else {
+        t.state = 'pending';
+        counters.requeued += 1;
+        say('reap', `reaper: lease on ${t.id} expired → requeued (held by ${heldBy})`);
+      }
       // A worker still running this task loses ownership but keeps its now-stale fence.
       const w = workers.find((x) => x.taskId === t.id && x.state === 'running');
       // A stalled worker stays running: it will thaw, finish, and get fenced on write.
@@ -131,8 +140,8 @@ export function mountSim(host) {
     });
 
     // Keep a little work flowing so the queue never sits empty.
-    if (tasks.filter((t) => t.state !== 'done').length < 4) tasks.push(newTask());
-    if (tasks.length > 16) tasks = tasks.filter((t) => t.state !== 'done').slice(-16);
+    if (tasks.filter((t) => t.state === 'pending' || t.state === 'leased').length < 4) tasks.push(newTask());
+    if (tasks.length > 18) tasks = tasks.filter((t) => t.state !== 'done').slice(-18);
   }
 
   // The whole point of the simulation lives here.
@@ -149,6 +158,11 @@ export function mountSim(host) {
       // Stale token. The store rejects it, so the duplicate never happens.
       counters.fenced += 1;
       say('fence', `${w.id} write REJECTED — fence ${w.fence} < current ${t.fence}`);
+      retire(w);
+      return;
+    }
+    if (t.state === 'failed') {
+      say('dead', `${w.id} write to ${t.id} ignored — task is dead-lettered`);
       retire(w);
       return;
     }
@@ -254,7 +268,7 @@ export function mountSim(host) {
 
   // The visual log adds ~2 rows a second. Announcing all of it would flood a screen reader,
   // so only failure-path events are spoken, and at most one every few seconds.
-  const NOTABLE = new Set(['kill', 'part', 'stall', 'reap', 'fence', 'dupe', 'wake']);
+  const NOTABLE = new Set(['kill', 'part', 'stall', 'reap', 'fence', 'dupe', 'wake', 'dead']);
   let lastAnnounceAt = 0;
   let pendingAnnounce = null;
   let simClock = 0;
@@ -272,10 +286,15 @@ export function mountSim(host) {
   function draw() {
     // Live work first, a few completed tasks after it for context.
     const shown = [...tasks.filter((t) => t.state !== 'done'), ...tasks.filter((t) => t.state === 'done').slice(-5)];
+    // 'failed' tasks stay visible; they are the queue telling you it gave up.
     elQueue.innerHTML = shown.slice(0, 14).map((t) => {
-      const cls = t.state === 'done' ? 'is-done' : t.state === 'leased' ? 'is-leased' : 'is-pending';
-      const title = `${t.id} — ${t.state}, fence ${t.fence}${t.attempts > 1 ? `, attempt ${t.attempts}` : ''}`;
-      return `<span class="sim-task ${cls}" title="${title}">${t.id}${t.fence > 1 ? `<sup>${t.fence}</sup>` : ''}</span>`;
+      const cls = t.state === 'done' ? 'is-done'
+        : t.state === 'failed' ? 'is-failed'
+        : t.state === 'leased' ? 'is-leased' : 'is-pending';
+      const label = `${t.id} — ${t.state}, fence ${t.fence}${t.attempts > 1 ? `, attempt ${t.attempts}` : ''}`;
+      // The superscript is decorative shorthand for the fence; without aria-hidden a screen
+      // reader concatenates it into the id and announces "t9" with fence 3 as "t93".
+      return `<span class="sim-task ${cls}" title="${label}" aria-label="${label}">${t.id}${t.fence > 1 ? `<sup aria-hidden="true">${t.fence}</sup>` : ''}</span>`;
     }).join('');
 
     elWorkers.innerHTML = workers.map((w) => {
@@ -300,6 +319,7 @@ export function mountSim(host) {
       ['completed', counters.completed, ''],
       ['requeued by reaper', counters.requeued, ''],
       ['writes fenced off', counters.fenced, 'is-fence'],
+      ...(counters.failed ? [['dead-lettered', counters.failed, 'is-fence']] : []),
       ['duplicate executions', counters.duplicates, counters.duplicates ? 'is-bad' : 'is-good'],
     ].map(([label, val, cls]) => `<div class="sim-counter ${cls}"><span class="n">${val}</span><span class="l">${label}</span></div>`).join('');
 

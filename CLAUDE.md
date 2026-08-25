@@ -59,6 +59,11 @@ New modules, all leaves or near-leaves so the graph stays acyclic:
 `sim-queue.js`, `search.js`, `plainview.js`, `tour.js`.
 
 New persistence keys: `ide.view.v1`, `ide.view-hint.v1`, `ide.tour.v1`.
+
+`sim-queue.js` invariant, do not regress it: the lease lives on the **task**, not the worker.
+An earlier draft keyed the reaper off each worker's lease, so a dead worker kept re-reaping a task
+another worker legitimately owned - 95 spurious requeues and the fence check never fired. The store
+is the authority on ownership; a failed worker's opinion does not count.
 New shortcut: Ctrl/Cmd+Shift+F (content search). Ctrl/Cmd+K now excludes Shift so the two do not collide.
 
 **Deliberate, documented exception to hard constraint 2:** `index.html` carries a `<noscript>`

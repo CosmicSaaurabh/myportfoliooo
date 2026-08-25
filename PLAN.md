@@ -217,6 +217,10 @@ It proves the "zero duplicate execution" claim instead of asserting it, and it i
 
 **Model.**
 Tasks `t1..tN` in a queue with states `pending | leased | done | failed`.
+A task that burns `MAX_ATTEMPTS` (3) leases is dead-lettered rather than retried forever, and a
+late write to a dead-lettered task is ignored rather than double-executed. The dead-letter counter
+tile only renders once the count is non-zero, so the default view stays on the four numbers that
+tell the main story.
 Workers `W1..W4`, each optionally holding a lease `{taskId, expiresAt, fenceToken}`.
 A monotonic fence counter per task.
 A reaper that scans for expired leases, requeues, and **increments the fence token**.
@@ -246,7 +250,9 @@ That single line is the whole point of the feature.
 
 **Implementation constraints.**
 DOM and CSS, not canvas - so it is accessible, themable through the existing custom properties, and survives the print stylesheet.
-Lease bars as CSS width transitions.
+Lease bars as CSS width transitions (140ms linear, gated behind `prefers-reduced-motion:
+no-preference`) so the 10fps redraw reads as a continuous drain and each heartbeat renewal reads
+as a pulse rather than a jump.
 Event log as `role="log" aria-live="polite"`, throttled so it does not flood a screen reader.
 Controls are real `<button>`s.
 Under `prefers-reduced-motion: reduce`, replace auto-run with an explicit `Step` button.
