@@ -257,7 +257,7 @@ export const REGISTRY = {
     run: (args, c) => { c.openShortcuts && c.openShortcuts(); return ['Opening shortcuts…']; },
   },
   git: {
-    description: 'git log / git log --oneline / git branch', group: 'content',
+    description: 'git log / branch / blame / diff HEAD~1', group: 'content',
     run: (args) => {
       const sub = args[0];
       if (sub === 'diff') {

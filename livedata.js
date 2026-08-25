@@ -77,9 +77,20 @@ export async function refresh(opts = {}) {
 
     try {
       const res = await fetchWithTimeout(src.url);
-      if (res.status === 403 && res.headers.get('x-ratelimit-remaining') === '0') {
-        const reset = Number(res.headers.get('x-ratelimit-reset'));
-        if (src.host) setCooldown(src.host, reset);
+      // 403 + exhausted budget is GitHub's shape; 429 is the standard one (the community
+      // LeetCode wrapper returns it). Without cooling down on 429 we re-hit a host that has
+      // already told us to stop, on every single page load.
+      const ghExhausted = res.status === 403 && res.headers.get('x-ratelimit-remaining') === '0';
+      if (ghExhausted || res.status === 429) {
+        let until = Number(res.headers.get('x-ratelimit-reset'));
+        if (!until) {
+          // Retry-After is either delta-seconds or an HTTP date.
+          const ra = res.headers.get('retry-after');
+          const secs = Number(ra);
+          if (ra && Number.isFinite(secs)) until = Math.floor(Date.now() / 1000) + secs;
+          else if (ra) { const d = Date.parse(ra); if (!Number.isNaN(d)) until = Math.floor(d / 1000); }
+        }
+        if (src.host) setCooldown(src.host, until);
         results[id] = 'rate-limited';
         return;
       }
