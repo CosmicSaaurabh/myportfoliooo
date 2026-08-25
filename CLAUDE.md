@@ -49,6 +49,19 @@ Current structure:
 - **Phase 6 - git-log experience view**: ✅ implemented. `experience/history.git` renders career history as a `git log --graph`-style commit graph: `highlights` restructured to `{type, scope, subject, body}` (subjects reviewed/approved before build; `body` = original text verbatim, YAML view visually unchanged). Desktop graph uses a 2-column box-drawing gutter, per-role branch colors from `--pink/--blue/--purple/--orange/--green`, deterministic 7-hex commit hashes (dimmed, non-linking), Capslock rendered as an unmerged `HEAD` branch. Rows are focusable/Enter-activatable, opening the role's `.yaml` tab. `git log` / `git log --oneline` / `git branch` / bare `git` added to the terminal registry (surfacing in the palette automatically) with tab completion. Mobile (<768px) collapses to a single-rule vertical timeline, same click targets, no horizontal scroll.
 - **Phase 7 - polish backlog** (welcome typing, `?` shortcuts overlay, minimap, print stylesheet): ✅ implemented. Task 0 deduped the welcome view to one source (`index.html` canonical, captured via `outerHTML` at init); Ctrl/Cmd+Tab rebound to Ctrl/Cmd+Alt+Tab (kept working, misleading old hint removed). Typing animation uses a color-transparent-real-element + decorative aria-hidden overlay technique - real text is never emptied/appended, stays fully in the DOM/AT tree throughout; ~45ms/char ±10ms jitter, title then subtitle, once per session (`ide.welcome-typed.v1`), instant final state under `prefers-reduced-motion: reduce`. `?` overlay reuses palette's backdrop/dialog styling and focus-trap pattern, guarded against text-input focus and modifier keys; also a `shortcuts` REGISTRY command (auto-surfaces in palette). Minimap: absolutely-positioned overlay on `.editor-col` (≥1200px, `.code` views only - prose views render nothing), per-line proportional bars tinted from each line's first `tok-*` class, redrawn only on file/theme change, viewport rect synced on scroll; **click-to-scroll only, no drag** (per the prompt's stated fallback allowance). Print stylesheet: chrome/overlays/minimap hidden, forced light palette overrides regardless of active theme, line-number gutters hidden, `max-height`/`overflow` constraints removed so content paginates, `a[href^="http"]::after` expands URLs.
 
+## Verification lesson (2026-08-25)
+
+`closeTab` was deleted wholesale by a scripted edit and shipped broken: clicking a tab's x or
+pressing Ctrl/Cmd+W threw `ReferenceError: closeTab is not defined` and closed nothing. Two causes,
+both worth guarding against:
+
+1. The edit sliced from `function openFile(id` to the first column-0 `\n}`. `openFile` was a
+   **one-liner**, so the slice ran past it and swallowed the whole of the adjacent `closeTab`.
+   Never delimit a scripted edit by brace-guessing; match the full function text explicitly.
+2. Every verification pass navigated with `location.hash` and clicked tree rows. None ever clicked
+   a tab's close button. **A file-renders sweep is not a UI sweep** - exercise the chrome
+   (tab close, toggles, dialogs, keybindings), not just the content.
+
 ## Live-data rate limiting
 
 `livedata.js` cools a host down on **both** shapes of rate-limit response: GitHub's

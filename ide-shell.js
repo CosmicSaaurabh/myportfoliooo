@@ -767,6 +767,26 @@ function openFile(id) {
   setActive(id);
 }
 
+function closeTab(id) {
+  openTabs = openTabs.filter((x) => x !== id);
+  // A split pane showing the closed file would otherwise keep rendering it after the
+  // tab is gone. Retarget it to another open tab, or collapse the split entirely.
+  if (splitId === id) {
+    const other = openTabs.find((x) => x !== activeId) || openTabs[0] || null;
+    splitId = other && other !== id ? other : null;
+    if (!splitId) focusedPane = 1;
+  }
+  if (activeId === id) {
+    activeId = openTabs[openTabs.length - 1] || null;
+    history.pushState(null, '', activeId ? hashFor(activeId) : location.pathname + location.search);
+  }
+  if (!openTabs.length) { splitId = null; focusedPane = 1; }
+  renderTabs();
+  renderEditor();
+  syncTreeSelection();
+  updateStatusBar();
+  persist();
+}
 function cycleTab(dir) {
   if (openTabs.length < 2) return;
   const idx = openTabs.indexOf(activeId);
@@ -1076,7 +1096,11 @@ function init() {
   document.addEventListener('keydown', (e) => {
     const mod = e.ctrlKey || e.metaKey;
     if (!mod) return;
-    if (e.key.toLowerCase() === 'w' && activeId) { e.preventDefault(); closeTab(activeId); }
+    if (e.key.toLowerCase() === 'w' && activeId) {
+      if (isTypingTarget(e.target)) return;   // don't eat Ctrl+W while typing a command
+      e.preventDefault();
+      closeTab(activeId);
+    }
     else if (e.key === '\\' || e.code === 'Backslash') { e.preventDefault(); toggleSplit(); }
     else if (e.key === 'Tab' && e.altKey) { e.preventDefault(); cycleTab(e.shiftKey ? -1 : 1); }
   });
