@@ -64,7 +64,13 @@ New persistence keys: `ide.view.v1`, `ide.view-hint.v1`, `ide.tour.v1`.
 An earlier draft keyed the reaper off each worker's lease, so a dead worker kept re-reaping a task
 another worker legitimately owned - 95 spurious requeues and the fence check never fired. The store
 is the authority on ownership; a failed worker's opinion does not count.
-New shortcut: Ctrl/Cmd+Shift+F (content search). Ctrl/Cmd+K now excludes Shift so the two do not collide.
+New shortcuts: Ctrl/Cmd+Shift+F (content search) and Ctrl/Cmd+\\ (split editor).
+Ctrl/Cmd+K now excludes Shift so it does not collide with search.
+
+Default landing file is `readme`, not `about`. `setActive()` coerces an unknown id to `readme`,
+and the persisted-state restore falls back to it: filtering saved tabs can empty the list when a
+file no longer exists (a post unpublished, a file renamed), and `openTabs[-1]` is `undefined`,
+which used to throw on `fileById`. Keep both guards.
 
 **Deliberate, documented exception to hard constraint 2:** `index.html` carries a `<noscript>`
 condensed résumé. The whole site is client-rendered, so a crawler that does not run JS previously

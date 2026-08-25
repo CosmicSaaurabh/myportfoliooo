@@ -56,6 +56,8 @@ Click files in the left tree to open them as editor tabs.
 Tips:
 
 - On the git-graph view, press **Enter** / **Space** on a commit row to open that role’s `.yaml` tab.
+- Breadcrumbs sit above the editor and track the focused pane.
+- **Ctrl/Cmd+\** splits the editor; click a pane to focus it, then open a file to load it there. Collapses below 1000px.
 - On wide screens (≥1200px), a minimap appears for code-style views - click it to jump.
 - On mobile, the IDE chrome simplifies so content stays readable.
 
@@ -83,6 +85,7 @@ Press **`?`** anywhere (when not typing in an input) for the full overlay, or ru
 | `Ctrl/Cmd + Shift + F` | Search **inside** every file |
 | `Ctrl/Cmd + \`` | Toggle terminal |
 | `Ctrl/Cmd + W` | Close active tab |
+| `Ctrl/Cmd + \` | Split the editor into two panes |
 | `Ctrl/Cmd + Alt + Tab` | Cycle open tabs |
 | `?` | Shortcuts help |
 | `Esc` | Close palette / menu / overlay |
@@ -136,6 +139,7 @@ Examples: `open about.md`, `cat contact.sh`, `ls experience/`.
 | `interview` | Opens `interview.md` |
 | `posts` | Lists published technical write-ups |
 | `plain` | Switches to the plain résumé view |
+| `hire` | What I'm looking for, and how to reach me |
 | `npm run interview` | Yes, really |
 
 ### Themes
@@ -158,6 +162,7 @@ Theme also switches from the settings gear, status bar, or palette (`>theme …`
 | `git log --oneline` | Same history, one line per commit |
 | `git branch` | Roles listed as branches (`*` = current) |
 | `git blame` | Who is responsible for all this |
+| `git diff HEAD~1` | What changed between the last two roles |
 
 ---
 

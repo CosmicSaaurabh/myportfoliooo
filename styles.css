@@ -153,7 +153,38 @@ kbd{font-family:var(--font-mono); font-size:11px; background:var(--panel); borde
 }
 .tab-close:hover{opacity:1; background:color-mix(in srgb, var(--fg) 15%, transparent)}
 
-.pane{flex:1; overflow-y:auto; position:relative}
+.pane-wrap{flex:1; display:flex; min-height:0; min-width:0}
+.pane{flex:1; overflow-y:auto; position:relative; min-width:0}
+.pane-wrap.is-split .pane{flex:1 1 50%}
+.pane-wrap.is-split .pane.is-focused{box-shadow:inset 2px 0 0 -1px var(--blue)}
+.pane-divider{flex:none; width:1px; background:var(--border)}
+.pane-divider[hidden]{display:none}
+.pane-secondary[hidden]{display:none}
+
+/* Breadcrumbs */
+.breadcrumbs{
+  flex:none; display:flex; align-items:center; gap:7px; padding:6px 16px; min-height:29px;
+  background:var(--bg); border-bottom:1px solid var(--border);
+  font-family:var(--font-mono); font-size:11.5px; color:var(--comment); overflow-x:auto; white-space:nowrap;
+}
+.breadcrumbs[hidden]{display:none}
+.crumb-dir{color:var(--comment)}
+.crumb-file{color:var(--fg-dim); display:inline-flex; align-items:center; gap:6px}
+.crumb-glyph{font-weight:700; font-size:10px}
+.crumb-sep{color:var(--border)}
+.crumb-split-off{
+  margin-left:auto; font-family:var(--font-mono); font-size:11px; color:var(--comment);
+  border:1px solid var(--border); border-radius:4px; padding:2px 8px; flex:none;
+}
+.crumb-split-off:hover{color:var(--fg); border-color:var(--blue)}
+@media (max-width:1000px){
+  /* Two panes below this width leave neither readable. */
+  .pane-wrap.is-split{display:flex}
+  .pane-wrap.is-split .pane-secondary, .pane-wrap.is-split .pane-divider{display:none}
+}
+@media (max-width:768px){
+  .breadcrumbs{padding:5px 12px; font-size:11px}
+}
 
 /* Minimap (decorative, ≥1200px, .code views only) */
 .minimap{
@@ -165,6 +196,8 @@ kbd{font-family:var(--font-mono); font-size:11px; background:var(--panel); borde
 .minimap-viewport{position:absolute; left:0; right:0; background:color-mix(in srgb, var(--fg) 10%, transparent); border-top:1px solid var(--border); border-bottom:1px solid var(--border); pointer-events:none; display:none}
 @media (min-width:1200px){
   .minimap:not(.empty){display:block}
+  /* The minimap maps one pane; while split it would be ambiguous. */
+  .pane-wrap.is-split ~ .minimap{display:none}
 }
 
 /* Welcome view */
@@ -486,6 +519,7 @@ kbd{font-family:var(--font-mono); font-size:11px; background:var(--panel); borde
 .sim-log-row.k-kill,.sim-log-row.k-dupe{color:var(--pink); font-weight:600}
 .sim-log-row.k-part,.sim-log-row.k-drop,.sim-log-row.k-wake{color:var(--orange)}
 .sim-log-row.k-fence{color:var(--orange); font-weight:700}
+.tok-pink{color:var(--pink)}
 .sim-log-row.k-dead{color:var(--pink)}
 .sim-log-row.k-sim{color:var(--comment)}
 @media (max-width:768px){

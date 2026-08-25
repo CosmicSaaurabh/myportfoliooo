@@ -136,6 +136,9 @@
         <p class="tab-placeholder">Tabs load in increment 2 …</p>
       </div>
 
+      <nav class="breadcrumbs" id="breadcrumbs" aria-label="Breadcrumb"></nav>
+
+      <div class="pane-wrap" id="pane-wrap">
       <main class="pane" id="editor-pane">
         <div class="welcome" id="welcome-view">
           <div class="welcome-mark" aria-hidden="true">SM</div>
@@ -148,6 +151,9 @@
           </div>
         </div>
       </main>
+        <div class="pane-divider" id="pane-divider" hidden></div>
+        <main class="pane pane-secondary" id="editor-pane-2" hidden aria-label="Split editor pane"></main>
+      </div>
 
       <div class="minimap" id="minimap" aria-hidden="true"><div class="minimap-viewport" id="minimap-viewport"></div></div>
 
@@ -209,6 +215,7 @@
           <p><kbd>Ctrl/Cmd</kbd> + <kbd>Shift</kbd> + <kbd>F</kbd> — search in files</p>
           <p><kbd>Ctrl/Cmd</kbd> + <kbd>`</kbd> — toggle terminal</p>
           <p><kbd>Ctrl/Cmd</kbd> + <kbd>W</kbd> — close active tab</p>
+          <p><kbd>Ctrl/Cmd</kbd> + <kbd>\</kbd> — split the editor</p>
           <p><kbd>Ctrl/Cmd</kbd> + <kbd>Alt</kbd> + <kbd>Tab</kbd> — cycle open tabs</p>
           <p><kbd>?</kbd> — this help</p>
           <p><kbd>Esc</kbd> — close palette / menu / overlay</p>

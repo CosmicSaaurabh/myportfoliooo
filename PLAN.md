@@ -26,7 +26,7 @@ Implementation happens via approved phase prompts only (see CLAUDE.md for roles,
 | 11 | `projects/sentinel-engine.sim` - interactive durable-queue failure simulation. Three failure modes (kill / partition / stall), lease heartbeat, task-owned leases, reaper, fencing tokens. All three verified end-to-end to converge on a fenced write with duplicates at zero |
 | 12 | Content search - Ctrl/Cmd+Shift+F across every file with line context and highlighting |
 | 13 | `posts/` infrastructure + three drafted outlines (ship as `status: "draft"`, invisible until published) |
-| 14 | Flavour - `interview.md`, `sim`/`interview`/`posts`/`plain`/`npm`/`git blame` commands, help derived from the registry |
+| 14 | Flavour - `interview.md`, visible `hire` command, `sim`/`interview`/`posts`/`plain`/`npm`/`git blame`/`git diff HEAD~1`, breadcrumbs, split view (Ctrl/Cmd+\\), help derived from the registry |
 
 ---
 
@@ -301,9 +301,12 @@ These are reusable in interviews and on LinkedIn, which is most of their value.
 Bundle opportunistically; none of it is load-bearing.
 
 - `interview.md` - an "Ask me about" file with five topics and two-line answers. Pre-loads the reviewer's question list and reads as self-aware rather than boastful.
-- A visible hire-me path. `sudo hire-me` is a good easter egg but it is hidden, so it cannot be the only route.
-- `git blame about.md`, `git diff HEAD~1`, `npm run interview` as terminal commands.
-- Breadcrumbs above the editor; split view.
+- A visible hire-me path. **Shipped** as a `hire` command in the content group (so it surfaces in `help` and the palette), alongside the README's CTA row. `sudo hire-me` survives as the easter egg.
+- `git blame`, `git diff HEAD~1`, `npm run interview` as terminal commands. **All shipped.** `git diff HEAD~1` diffs the two most recent roles as a unified diff.
+- Breadcrumbs above the editor; split view. **Both shipped.** Breadcrumbs track the focused pane.
+  Ctrl/Cmd+\\ splits into two panes; the secondary pane is a viewport rather than a second tab strip,
+  so opening a file while it is focused retargets it in place. Split collapses below 1000px and
+  hides the minimap, which maps a single pane and would otherwise be ambiguous.
 
 ---
 

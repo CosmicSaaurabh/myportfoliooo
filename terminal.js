@@ -196,6 +196,21 @@ export const REGISTRY = {
       return ['Refreshing live data…', ...lines];
     },
   },
+  hire: {
+    description: 'what I am looking for, and how to reach me', group: 'content',
+    run: () => [
+      '<span class="tok-fn">Open to backend / distributed-systems roles.</span>',
+      '',
+      `  ${esc(readme.now)} · ${esc(readme.prev)} · ${esc(readme.years)}`,
+      '  Interested in: durable execution, consensus, storage, high-throughput backends.',
+      '',
+      `  <span class="tok-key">email</span>     <a href="mailto:${esc(contact.email)}">${esc(contact.email)}</a>`,
+      `  <span class="tok-key">linkedin</span>  <a href="${esc(contact.linkedin)}" target="_blank" rel="noopener">${esc(contact.linkedin)}</a>`,
+      `  <span class="tok-key">resume</span>    <a href="${esc(resumeHref)}" download>${esc(resumeHref)}</a>`,
+      '',
+      '<span class="tok-comment">(there is also a `sudo hire-me`, if you prefer ceremony.)</span>',
+    ],
+  },
   sim: {
     description: 'open the durable-queue failure simulation', group: 'content',
     run: (args, ctx) => { ctx.openFile('sentinel-sim'); return ['<span class="tok-comment">opening projects/sentinel-engine.sim — try "Kill a worker"</span>']; },
@@ -245,6 +260,23 @@ export const REGISTRY = {
     description: 'git log / git log --oneline / git branch', group: 'content',
     run: (args) => {
       const sub = args[0];
+      if (sub === 'diff') {
+        // Diffs the two most recent roles: what the move actually changed.
+        const [cur, prev] = experience;
+        const out = [
+          `<span class="tok-comment">diff --git a/${esc(prev.id)} b/${esc(cur.id)}</span>`,
+          `<span class="tok-comment">--- a/${esc(prev.id)}  ${esc(prev.period)}</span>`,
+          `<span class="tok-comment">+++ b/${esc(cur.id)}  ${esc(cur.period)}</span>`,
+          `<span class="tok-comment">@@ role @@</span>`,
+          `<span class="tok-pink">- ${esc(prev.role)} @ ${esc(prev.company)}</span>`,
+          `<span class="tok-fn">+ ${esc(cur.role)} @ ${esc(cur.company)}</span>`,
+          '',
+          `<span class="tok-comment">@@ what changed @@</span>`,
+        ];
+        cur.highlights.slice(0, 4).forEach((h) => out.push(`<span class="tok-fn">+ ${esc(h.type)}(${esc(h.scope)}): ${esc(h.subject)}</span>`));
+        out.push('', `<span class="tok-comment">${cur.highlights.length} insertions(+), ${prev.highlights.length} deletions(-)</span>`);
+        return out;
+      }
       if (sub === 'blame') {
         return [
           `<span class="tok-comment">${esc(commitHash(contact.email))} (${esc(readme.name)} 2018-08-01) 1)</span> started writing code`,
@@ -255,7 +287,7 @@ export const REGISTRY = {
         ];
       }
       const list = buildCommitList();
-      if (!sub || (sub !== 'log' && sub !== 'branch' && sub !== 'blame')) {
+      if (!sub || (sub !== 'log' && sub !== 'branch' && sub !== 'blame' && sub !== 'diff')) {
         return [
           `git: '${esc(sub || '')}'${sub ? ' is not a git command. ' : ' '}See 'git --help'.`.trim(),
           '',

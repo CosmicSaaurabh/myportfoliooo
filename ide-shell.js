@@ -19,6 +19,8 @@ const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
 /* ---------- state ---------- */
 let openTabs = [];
 let activeId = null;
+let splitId = null;        // secondary pane's file, null when not split
+let focusedPane = 1;       // which pane a file-open targets while split
 const mdMode = {}; // fileId -> 'preview' | 'source'
 const STORE_KEY = 'ide.state.v1';
 
@@ -49,6 +51,8 @@ function inlineFormat(text) {
   let s = esc(text);
   s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
   s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  // Bold is consumed first, so any remaining single-asterisk pair is emphasis.
+  s = s.replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>');
   s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
   return s;
 }
@@ -637,19 +641,17 @@ function renderTabs() {
 }
 
 /* ---------- editor pane ---------- */
-function renderEditor() {
-  const pane = document.getElementById('editor-pane');
-  // Always tear the simulation's timer down before the pane is replaced.
-  if (unmountSim) { unmountSim(); unmountSim = null; }
-  if (!activeId) { pane.innerHTML = WELCOME_HTML; playWelcomeTyping(); return; }
-  pane.innerHTML = renderFileHTML(activeId);
+let unmounts = [];
+function wirePane(pane, id) {
+  if (!id) { pane.innerHTML = WELCOME_HTML; playWelcomeTyping(); return; }
+  pane.innerHTML = renderFileHTML(id);
   const simHost = pane.querySelector('[data-role="sim-host"]');
-  if (simHost) unmountSim = mountSim(simHost);
+  if (simHost) unmounts.push(mountSim(simHost));
   const toggleBtn = pane.querySelector('.md-toggle');
   if (toggleBtn) {
     toggleBtn.addEventListener('click', () => {
-      const id = toggleBtn.dataset.id;
-      mdMode[id] = mdMode[id] === 'source' ? 'preview' : 'source';
+      const fid = toggleBtn.dataset.id;
+      mdMode[fid] = mdMode[fid] === 'source' ? 'preview' : 'source';
       renderEditor();
       persist();
     });
@@ -661,7 +663,69 @@ function renderEditor() {
     row.addEventListener('click', () => openFile(row.dataset.open));
     row.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openFile(row.dataset.open); } });
   });
+}
+function renderEditor() {
+  const pane = document.getElementById('editor-pane');
+  const pane2 = document.getElementById('editor-pane-2');
+  const divider = document.getElementById('pane-divider');
+  // Tear every simulation timer down before any pane is replaced.
+  unmounts.forEach((fn) => fn());
+  unmounts = [];
+
+  wirePane(pane, activeId);
+
+  const split = Boolean(splitId) && !isNarrow();
+  pane2.hidden = !split;
+  divider.hidden = !split;
+  document.getElementById('pane-wrap').classList.toggle('is-split', split);
+  if (split) {
+    wirePane(pane2, splitId);
+    pane.classList.toggle('is-focused', focusedPane === 1);
+    pane2.classList.toggle('is-focused', focusedPane === 2);
+  } else {
+    pane2.innerHTML = '';
+    pane.classList.remove('is-focused');
+  }
+  renderBreadcrumbs();
   updateMinimap();
+}
+
+/* ---------- breadcrumbs ---------- */
+function renderBreadcrumbs() {
+  const el = document.getElementById('breadcrumbs');
+  const id = focusedPane === 2 && splitId ? splitId : activeId;
+  if (!id) { el.innerHTML = ''; el.hidden = true; return; }
+  el.hidden = false;
+  const f = fileById(id);
+  const parts = f.path.split('/');
+  const meta = EXT_META[f.ext] || {};
+  const crumbs = parts.map((part, i) => {
+    const last = i === parts.length - 1;
+    if (!last) return `<span class="crumb crumb-dir">${esc(part)}</span>`;
+    return `<span class="crumb crumb-file" aria-current="page"><span class="crumb-glyph" style="color:${meta.color || 'var(--fg-dim)'}">${esc(meta.glyph || '')}</span>${esc(part)}</span>`;
+  });
+  el.innerHTML = crumbs.join('<span class="crumb-sep" aria-hidden="true">›</span>')
+    + (splitId && !isNarrow() ? `<button type="button" class="crumb-split-off" id="split-off">Close split</button>` : '');
+  const off = document.getElementById('split-off');
+  if (off) off.addEventListener('click', () => toggleSplit(false));
+}
+
+/* ---------- split view ---------- */
+const isNarrow = () => window.innerWidth <= 1000;
+function toggleSplit(force) {
+  const want = typeof force === 'boolean' ? force : !splitId;
+  if (want && isNarrow()) return;                     // no room for two panes
+  if (want) {
+    // Prefer another open tab so the split is immediately useful.
+    const other = openTabs.find((id) => id !== activeId);
+    splitId = other || activeId;
+    focusedPane = 2;
+  } else {
+    splitId = null;
+    focusedPane = 1;
+  }
+  renderEditor();
+  persist();
 }
 function updateStatusBar() {
   const sb = document.getElementById('sb-filetype');
@@ -673,10 +737,11 @@ function updateStatusBar() {
 /* ---------- routing & persistence ---------- */
 const hashFor = (id) => `#${fileById(id).path}`;
 const idForHash = (hash) => { const p = decodeURIComponent(hash.replace(/^#/, '')); return FILES.find((f) => f.path === p)?.id || null; };
-function persist() { try { localStorage.setItem(STORE_KEY, JSON.stringify({ openTabs, activeId, mdMode })); } catch (e) {} }
+function persist() { try { localStorage.setItem(STORE_KEY, JSON.stringify({ openTabs, activeId, mdMode, splitId })); } catch (e) {} }
 function loadPersisted() { try { return JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); } catch (e) { return null; } }
 
 function setActive(id) {
+  if (!fileById(id)) id = 'readme';
   activeId = id;
   if (!openTabs.includes(id)) openTabs.push(id);
   renderTabs();
@@ -688,19 +753,20 @@ function setActive(id) {
   persist();
   if (window.innerWidth <= 768) closeMobileOverlay();
 }
-function openFile(id) { setActive(id); }
-function closeTab(id) {
-  openTabs = openTabs.filter((x) => x !== id);
-  if (activeId === id) {
-    activeId = openTabs[openTabs.length - 1] || null;
-    history.pushState(null, '', activeId ? hashFor(activeId) : location.pathname + location.search);
+function openFile(id) {
+  if (!fileById(id)) return;
+  if (splitId && focusedPane === 2 && !isNarrow()) {
+    // A split's secondary pane is a viewport, not a tab strip: retarget it in place.
+    splitId = id;
+    if (!openTabs.includes(id)) openTabs.push(id);
+    renderTabs();
+    renderEditor();
+    persist();
+    return;
   }
-  renderTabs();
-  renderEditor();
-  syncTreeSelection();
-  updateStatusBar();
-  persist();
+  setActive(id);
 }
+
 function cycleTab(dir) {
   if (openTabs.length < 2) return;
   const idx = openTabs.indexOf(activeId);
@@ -929,6 +995,18 @@ function init() {
   initPlainView();
   setupShortcutsOverlay();
   document.getElementById('editor-pane').addEventListener('scroll', syncMinimapViewport);
+  document.getElementById('editor-pane').addEventListener('mousedown', () => {
+    if (splitId && focusedPane !== 1) { focusedPane = 1; renderEditor(); }
+  });
+  document.getElementById('editor-pane-2').addEventListener('mousedown', () => {
+    if (splitId && focusedPane !== 2) { focusedPane = 2; renderEditor(); }
+  });
+  // Collapsing below the split threshold must not strand a hidden second pane.
+  window.addEventListener('resize', () => {
+    const wrap = document.getElementById('pane-wrap');
+    if (splitId && isNarrow() && wrap.classList.contains('is-split')) renderEditor();
+    else if (splitId && !isNarrow() && !wrap.classList.contains('is-split')) renderEditor();
+  });
   document.getElementById('minimap').addEventListener('click', scrollToMinimapClick);
   onThemeChange(updateMinimap);
   window.addEventListener('resize', syncMinimapViewport);
@@ -944,6 +1022,10 @@ function init() {
       search.toggle();
     }
   });
+
+  // One source for the résumé path; the markup's href is only a no-JS fallback.
+  const dl = document.getElementById('act-download');
+  if (dl) dl.setAttribute('href', resumeHref);
 
   const explorerBtn = document.getElementById('act-explorer');
   explorerBtn.addEventListener('click', () => {
@@ -978,10 +1060,16 @@ function init() {
     if (saved && Array.isArray(saved.openTabs) && saved.openTabs.length) {
       openTabs = saved.openTabs.filter((id) => fileById(id));
       Object.assign(mdMode, saved.mdMode || {});
-      const restoreActive = saved.activeId && openTabs.includes(saved.activeId) ? saved.activeId : openTabs[openTabs.length - 1];
+      if (saved.splitId && fileById(saved.splitId)) splitId = saved.splitId;
+      // Filtering above can empty the list entirely if every saved tab points at a file that
+      // no longer exists (a post unpublished, a file renamed). openTabs[-1] is undefined, and
+      // setActive(undefined) then throws on fileById. Always land on a file that exists.
+      const restoreActive = (saved.activeId && openTabs.includes(saved.activeId))
+        ? saved.activeId
+        : (openTabs[openTabs.length - 1] || 'readme');
       setActive(restoreActive);
     } else {
-      setActive('about');
+      setActive('readme');
     }
   }
 
@@ -989,6 +1077,7 @@ function init() {
     const mod = e.ctrlKey || e.metaKey;
     if (!mod) return;
     if (e.key.toLowerCase() === 'w' && activeId) { e.preventDefault(); closeTab(activeId); }
+    else if (e.key === '\\' || e.code === 'Backslash') { e.preventDefault(); toggleSplit(); }
     else if (e.key === 'Tab' && e.altKey) { e.preventDefault(); cycleTab(e.shiftKey ? -1 : 1); }
   });
   window.addEventListener('popstate', () => {
