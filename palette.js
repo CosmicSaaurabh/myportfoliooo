@@ -3,7 +3,7 @@
 // aria-activedescendant wiring, and Enter-to-open. Command mode ('>' prefix) arrives in
 // increment 4 alongside runInTerminal + recents-for-commands.
 
-import { experience, projects } from './file-contents.js';
+import { FILES, EXT_META, extOf } from './files.js';
 import { REGISTRY } from './terminal.js';
 import { THEMES } from './theme.js';
 
@@ -11,16 +11,7 @@ const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
 const RECENTS_KEY = 'ide.palette.v1';
 const MAX_RECENTS = 8;
 
-const FILES = [
-  { id: 'about', name: 'about.md', path: 'about.md' },
-  ...experience.map((e) => ({ id: e.id, name: `${e.id}.yaml`, path: `experience/${e.id}.yaml` })),
-  ...projects.map((p) => ({ id: p.id, name: `${p.id}.md`, path: `projects/${p.id}.md` })),
-  { id: 'skills', name: 'skills.json', path: 'skills.json' },
-  { id: 'achievements', name: 'achievements.log', path: 'achievements.log' },
-  { id: 'contact', name: 'contact.sh', path: 'contact.sh' },
-];
-const EXT_GLYPH = { md: 'M', yaml: 'Y', json: '{}', log: '≡', sh: '$' };
-const extOf = (name) => name.split('.').pop();
+const EXT_GLYPH = Object.fromEntries(Object.entries(EXT_META).map(([k, v]) => [k, v.glyph]));
 
 /* ---------- hand-rolled fuzzy subsequence matcher ---------- */
 function fuzzyMatch(query, target) {

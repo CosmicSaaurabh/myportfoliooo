@@ -1,7 +1,12 @@
 // ide-shell.js — IDE shell: layout, file tree, tabs, editor renderers, hash routing, persistence.
 // Terminal logic (Phase 2) lives entirely in terminal.js; this file only owns the panel's
 // open/close/resize plumbing once that phase starts.
-import { about, experience, projects, skills, achievements, contact, resumeHref, codingProfiles } from './file-contents.js';
+import { about, experience, projects, skills, achievements, contact, resumeHref, codingProfiles, readme, interview, posts } from './file-contents.js';
+import { FILES, TREE, EXT_META, fileById } from './files.js';
+import { mountSim } from './sim-queue.js';
+import { initSearch } from './search.js';
+import { initPlainView } from './plainview.js';
+import { initTour } from './tour.js';
 import { initTerminal, runInTerminal } from './terminal.js';
 import { initPalette } from './palette.js';
 import { THEMES, applyTheme, getCurrentTheme, onThemeChange } from './theme.js';
@@ -9,35 +14,7 @@ import { get as getLiveData, refresh as refreshLiveData, onLiveDataChange } from
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-/* ---------- file registry & tree shape ---------- */
-const FILES = [
-  { id: 'about', name: 'about.md', ext: 'md', path: 'about.md' },
-  { id: 'history', name: 'history.git', ext: 'git', path: 'experience/history.git' },
-  ...experience.map((e) => ({ id: e.id, name: `${e.id}.yaml`, ext: 'yaml', path: `experience/${e.id}.yaml` })),
-  ...projects.map((p) => ({ id: p.id, name: `${p.id}.md`, ext: 'md', path: `projects/${p.id}.md` })),
-  { id: 'skills', name: 'skills.json', ext: 'json', path: 'skills.json' },
-  { id: 'profiles', name: 'profiles.md', ext: 'md', path: 'profiles.md' },
-  { id: 'achievements', name: 'achievements.log', ext: 'log', path: 'achievements.log' },
-  { id: 'contact', name: 'contact.sh', ext: 'sh', path: 'contact.sh' },
-];
-const TREE = [
-  { kind: 'file', id: 'about' },
-  { kind: 'folder', name: 'experience', children: ['history', ...experience.map((e) => e.id)] },
-  { kind: 'folder', name: 'projects', children: projects.map((p) => p.id) },
-  { kind: 'file', id: 'skills' },
-  { kind: 'file', id: 'profiles' },
-  { kind: 'file', id: 'achievements' },
-  { kind: 'file', id: 'contact' },
-];
-const EXT_META = {
-  md: { glyph: 'M', color: 'var(--blue)' },
-  yaml: { glyph: 'Y', color: 'var(--purple)' },
-  json: { glyph: '{}', color: 'var(--yellow)' },
-  log: { glyph: '≡', color: 'var(--comment)' },
-  sh: { glyph: '$', color: 'var(--green)' },
-  git: { glyph: '⎇', color: 'var(--orange)' },
-};
-const fileById = (id) => FILES.find((f) => f.id === id);
+/* file registry, tree shape and ext glyphs now live in files.js (single source) */
 
 /* ---------- state ---------- */
 let openTabs = [];
@@ -121,9 +98,10 @@ const USEDAT_PROJECT_MAP = {
   'Sentinel Engine': 'sentinel-engine',
   'Distributed KV Store': 'distributed-kv-store',
   'E-Commerce platform': 'ecommerce-platform',
-  'Splitwise': 'splitwise',
-  'CtrlBudget': 'ctrlbudget',
-  'WeDiscussCP': 'wediscusscp',
+  // These three are no longer standalone files — they live in also-built.md.
+  'Splitwise': 'also-built',
+  'CtrlBudget': 'also-built',
+  'WeDiscussCP': 'also-built',
 };
 const DEPTH_META = {
   expert: { label: 'Expert', color: 'var(--green)' },
@@ -174,6 +152,8 @@ function renderJsonFile(obj) {
   return `<div class="code">${lines.map((l, idx) => lineRow(idx + 1, l)).join('')}</div>`;
 }
 function renderLogFile(list) {
+  // The array is authored in whatever order entries were added; the log reads by date.
+  list = [...list].sort((a, b) => (a.ts < b.ts ? 1 : -1));
   const lines = list.map((a) => `<span class="tok-comment">[${esc(a.ts)}]</span> <span class="tok-fn">${esc(a.level)}</span>&nbsp;&nbsp;<span class="tok-plain">${esc(a.text)}</span>`);
   return `<div class="code">${lines.map((l, idx) => lineRow(idx + 1, l)).join('')}</div>`;
 }
@@ -314,15 +294,101 @@ function renderGraphFile() {
   return `<div class="graph-desktop" role="list" aria-label="Career history, rendered as a git commit graph">${desktop}</div>
     <div class="graph-mobile" role="list" aria-label="Career history timeline">${mobile}</div>`;
 }
+/* ---------- sentinel-engine.sim host (behaviour lives in sim-queue.js) ---------- */
+let unmountSim = null;
+function renderSimFile() {
+  return `<div class="repo-view repo-enter"><div data-role="sim-host"></div>
+    <div class="repo-footer"><button type="button" class="chip chip-link" data-open="sentinel-engine">Read the Sentinel Engine write-up →</button></div>
+  </div>`;
+}
+
+/* ---------- README landing view ---------- */
+function renderReadme() {
+  const r = readme;
+  const tiles = r.metrics.map((m) => `<div class="stat-card"><span class="num">${esc(m.value)}</span><span class="label">${esc(m.label)}</span></div>`).join('');
+  const cards = r.startHere.map((s) => `<button type="button" class="start-card" data-open="${esc(s.open)}">
+      <span class="start-kicker">${esc(s.kicker)}</span>
+      <span class="start-title">${esc(s.title)}</span>
+      <span class="start-blurb">${esc(s.blurb)}</span>
+      <span class="start-go" aria-hidden="true">Open →</span>
+    </button>`).join('');
+  const drive = r.drive.map((d) => `<li><kbd>${esc(d.keys)}</kbd><span>${esc(d.what)}</span></li>`).join('');
+  return `<div class="repo-view repo-enter readme-view">
+    <header class="readme-hero">
+      <p class="readme-eyebrow">${esc(r.now)} · ${esc(r.prev)} · ${esc(r.years)}</p>
+      <h1 class="readme-name">${esc(r.name)}</h1>
+      <p class="readme-title">${esc(r.title)}</p>
+      <p class="readme-pitch">${esc(r.pitch)}</p>
+      <div class="readme-cta">
+        <a class="cta cta-primary" href="${esc(resumeHref)}" download>Download résumé</a>
+        <a class="cta" href="mailto:${esc(contact.email)}">Email me</a>
+        <a class="cta" href="${esc(contact.linkedin)}" target="_blank" rel="noopener">LinkedIn</a>
+        <a class="cta" href="${esc(contact.github)}" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </header>
+    <div class="stat-strip">${tiles}</div>
+    <section class="repo-section">
+      <h2>Start here</h2>
+      <div class="start-grid">${cards}</div>
+    </section>
+    <section class="repo-section">
+      <h2>Driving this site</h2>
+      <ul class="drive-list">${drive}</ul>
+    </section>
+  </div>`;
+}
+
+/* ---------- also-built: the smaller projects, without fake metric tiles ---------- */
+function renderAlsoBuilt() {
+  const rest = projects.filter((p) => !p.featured);
+  const rows = rest.map((p) => `<article class="ab-item">
+      <h3 class="ab-title">${esc(p.title)}</h3>
+      <p class="ab-sub">${esc(p.summary)}</p>
+      <p class="ab-stack">${p.tags.map((t) => `<span class="stack-pill">${esc(t)}</span>`).join('')}</p>
+      <a class="ab-link" href="${esc(p.github)}" target="_blank" rel="noopener">View on GitHub →</a>
+    </article>`).join('');
+  return `<div class="repo-view repo-enter">
+    <div class="repo-header"><h1 class="repo-title">Also built</h1></div>
+    <p class="repo-desc no-indent">Smaller projects worth a look, kept short on purpose. The systems work lives in the three project files above.</p>
+    <div class="ab-list">${rows}</div>
+  </div>`;
+}
+
+/* ---------- interview.md ---------- */
+function renderInterview() {
+  const rows = interview.topics.map((t, i) => `<article class="qa">
+      <h3 class="qa-q"><span class="qa-num">Q${i + 1}</span>${esc(t.q)}</h3>
+      <p class="qa-a">${esc(t.a)}</p>
+      ${t.open ? `<button type="button" class="chip chip-link" data-open="${esc(t.open)}">Open the relevant file →</button>` : ''}
+    </article>`).join('');
+  return `<div class="repo-view repo-enter">
+    <div class="repo-header"><h1 class="repo-title">Ask me about</h1></div>
+    <p class="repo-desc no-indent">${esc(interview.intro)}</p>
+    <div class="qa-list">${rows}</div>
+  </div>`;
+}
+
+function renderPostFile(id) {
+  const post = posts.find((p) => p.id === id);
+  if (!post) return '<div class="code">Post not found.</div>';
+  const meta = `<p class="post-meta">${esc(post.date)} · ${post.readingMinutes} min read</p>`;
+  return renderMarkdownFile(id, post.markdown).replace('<div class="md-preview">', `<div class="md-preview">${meta}`);
+}
+
 function renderFileHTML(id) {
   const f = fileById(id);
+  if (id === 'readme') return renderReadme();
   if (id === 'about') return renderMarkdownFile(id, about.markdown);
   if (id === 'history') return renderGraphFile();
+  if (id === 'also-built') return renderAlsoBuilt();
+  if (id === 'interview') return renderInterview();
+  if (id === 'sentinel-sim') return renderSimFile();
   if (f.ext === 'yaml') return renderYamlFile(experience.find((e) => e.id === id));
   if (id === 'skills') return renderSkillsFile();
   if (id === 'profiles') return renderProfilesFile();
   if (id === 'achievements') return renderLogFile(achievements);
   if (id === 'contact') return renderShFile(contact);
+  if (posts.some((p) => p.id === id)) return renderPostFile(id);
   if (f.ext === 'md') return renderProjectFile(id);
   return '<div class="code">Unsupported file type.</div>';
 }
@@ -376,8 +442,15 @@ function repoNav(id) {
     ${next ? `<button type="button" class="chip-nav" data-open="${next.id}">${esc(next.title)} →</button>` : '<span></span>'}
   </nav>`;
 }
+// Owner comes from the real repo URL. A hardcoded owner was wrong for every project
+// (the real owners are CosmicSaaurabh and, for the e-commerce platform, Softogram).
+function repoOwner(p) {
+  const m = /github\.com\/([^/]+)\/([^/#?]+)/.exec(p.github || '');
+  return m ? m[1] : 'CosmicSaaurabh';
+}
 function renderRepoPreview(p) {
-  const badges = `<span class="badge"><span class="badge-label">build</span><span class="badge-value bg-green">passing</span></span><span class="badge"><span class="badge-label">coverage</span><span class="badge-value bg-blue">tested</span></span>`;
+  // No build/coverage badges here on purpose: none of these repos run CI, and a
+  // fabricated "passing" badge discredits the real numbers next to it.
   const stack = p.tags.map((t) => `<span class="stack-pill">${esc(t)}</span>`).join('');
   const stats = p.metrics.map((m) => `<div class="stat-card"><span class="num">${esc(m.value)}</span><span class="label">${esc(m.label)}</span></div>`).join('');
   const notes = (p.architectureNotes || []).map((n) => `<li>${esc(n)}</li>`).join('');
@@ -403,12 +476,12 @@ function renderRepoPreview(p) {
   return `<div class="repo-view repo-enter">
     <div class="repo-header">
       <svg class="repo-icon" width="20" height="20" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M208,32H72A24,24,0,0,0,48,56V224a8,8,0,0,0,8,8H192a8,8,0,0,0,0-16H64v-8a8,8,0,0,1,8-8H208a8,8,0,0,0,8-8V40A8,8,0,0,0,208,32ZM72,48H200V184H72a23.85,23.85,0,0,0-8,1.37V56A8,8,0,0,1,72,48Z"></path></svg>
-      <h1 class="repo-title"><span class="owner">sauraabh /</span> ${esc(p.id)}</h1>
+      <h1 class="repo-title"><span class="owner">${esc(repoOwner(p))} /</span> ${esc(p.id)}</h1>
     </div>
     <p class="repo-desc">${esc(p.summary)}</p>
     <div class="repo-meta">
       <span class="lang-label"><span class="lang-dot" style="background:${p.language.color}"></span>${esc(p.language.name)}</span>
-      ${badges}${stack}
+      ${stack}
     </div>
     ${liveMeta ? `<div class="repo-live-meta">${liveMeta}</div>` : ''}
     <div class="stat-strip">${stats}</div>
@@ -426,6 +499,10 @@ function renderRepoPreview(p) {
       <div class="decision-list">${decisions}</div>
       ${p.repoStatus === 'public' ? `<a class="decision-track-link" href="${p.github}/issues" target="_blank" rel="noopener">Track progress on GitHub →</a>` : ''}
     </section>
+    ${p.id === 'sentinel-engine' ? `<div class="repo-sim-cta">
+      <button type="button" class="cta cta-primary" data-open="sentinel-sim">▶ Run the failure simulation →</button>
+      <span class="repo-sim-note">Kill a worker and watch the fencing token hold the exactly-once guarantee.</span>
+    </div>` : ''}
     <div class="repo-footer">
       ${ghDisabled
         ? `<button type="button" class="gh-btn" disabled title="going public soon">View on GitHub →</button>`
@@ -562,8 +639,12 @@ function renderTabs() {
 /* ---------- editor pane ---------- */
 function renderEditor() {
   const pane = document.getElementById('editor-pane');
+  // Always tear the simulation's timer down before the pane is replaced.
+  if (unmountSim) { unmountSim(); unmountSim = null; }
   if (!activeId) { pane.innerHTML = WELCOME_HTML; playWelcomeTyping(); return; }
   pane.innerHTML = renderFileHTML(activeId);
+  const simHost = pane.querySelector('[data-role="sim-host"]');
+  if (simHost) unmountSim = mountSim(simHost);
   const toggleBtn = pane.querySelector('.md-toggle');
   if (toggleBtn) {
     toggleBtn.addEventListener('click', () => {
@@ -573,7 +654,7 @@ function renderEditor() {
       persist();
     });
   }
-  pane.querySelectorAll('.chip-link, .chip-nav').forEach((btn) => {
+  pane.querySelectorAll('.chip-link, .chip-nav, .repo-sim-cta [data-open], .start-card').forEach((btn) => {
     btn.addEventListener('click', () => openFile(btn.dataset.open));
   });
   pane.querySelectorAll('.graph-row[data-open], .timeline-item[data-open]').forEach((row) => {
@@ -585,7 +666,7 @@ function renderEditor() {
 function updateStatusBar() {
   const sb = document.getElementById('sb-filetype');
   if (!activeId) { sb.textContent = 'Plain Text'; return; }
-  const labels = { md: 'Markdown', yaml: 'YAML', json: 'JSON', log: 'Log', sh: 'Shell Script', git: 'Git Graph' };
+  const labels = { md: 'Markdown', yaml: 'YAML', json: 'JSON', log: 'Log', sh: 'Shell Script', git: 'Git Graph', sim: 'Simulation' };
   sb.textContent = labels[fileById(activeId).ext];
 }
 
@@ -839,17 +920,28 @@ function init() {
   });
   // Non-blocking, post-render: page is fully usable before this resolves.
   setTimeout(() => { refreshLiveData().catch(() => {}); }, 300);
+  setTimeout(() => { if (!document.body.classList.contains('is-plain')) initTour({ openFile }); }, 900);
   const palette = initPalette({ openFile, runInTerminal });
   document.getElementById('palette-trigger').addEventListener('click', () => palette.toggle());
+  const search = initSearch({ onOpen: openFile });
+  document.getElementById('act-search').addEventListener('click', () => search.toggle());
+  document.getElementById('search-close').addEventListener('click', () => search.close());
+  initPlainView();
   setupShortcutsOverlay();
   document.getElementById('editor-pane').addEventListener('scroll', syncMinimapViewport);
   document.getElementById('minimap').addEventListener('click', scrollToMinimapClick);
   onThemeChange(updateMinimap);
   window.addEventListener('resize', syncMinimapViewport);
   document.addEventListener('keydown', (e) => {
-    if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'k' || e.code === 'KeyK')) {
+    if ((e.ctrlKey || e.metaKey) && !e.shiftKey && (e.key.toLowerCase() === 'k' || e.code === 'KeyK')) {
       e.preventDefault();
       palette.toggle();
+      return;
+    }
+    // Ctrl/Cmd+Shift+F — content search. Chrome leaves this one free.
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key.toLowerCase() === 'f' || e.code === 'KeyF')) {
+      e.preventDefault();
+      search.toggle();
     }
   });
 
@@ -867,11 +959,8 @@ function init() {
     document.querySelector('.activitybar').classList.toggle('open');
     document.getElementById('sidebar').classList.toggle('open');
   });
-  document.getElementById('act-settings').addEventListener('click', () => {
-    // Theme switching lands in a later phase.
-  });
   document.getElementById('act-call').addEventListener('click', () => {
-    const number = '+91 6393783010';
+    const number = contact.phone;
     navigator.clipboard?.writeText(number).then(() => {
       const toast = document.getElementById('call-toast');
       toast.textContent = `Copied ${number} — paste it into your phone to call.`;

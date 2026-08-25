@@ -166,7 +166,10 @@ if (lcProfile) {
   }
 }
 
-projects.forEach((p) => {
+// Only the featured projects are registered. Unauthenticated GitHub allows 60 requests per
+// hour per IP; registering all six meant 12 calls on every cold load, so a handful of visitors
+// behind one office NAT exhausted the budget and everyone after them saw static data only.
+projects.filter((p) => p.featured).forEach((p) => {
   if (p.repoStatus !== 'public' || !p.github) return;
   const or = ownerRepoFromUrl(p.github);
   if (!or) return;
