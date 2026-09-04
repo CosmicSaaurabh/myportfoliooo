@@ -402,7 +402,7 @@ export const achievements = [
 export const codingProfiles = [
   { name: "LeetCode", url: "https://leetcode.com/doodlemaster/", icon: "https://cdn.simpleicons.org/leetcode", statValue: "2091", statLabel: "Max rating", badge: { name: "Knight", icon: "https://leetcode.com/static/images/badges/knight.png" } },
   { name: "CodeChef Competitive Programming", url: "https://www.codechef.com/users/doodlemaster", icon: "https://cdn.simpleicons.org/codechef/a6e22e", statValue: "1964", statLabel: "Max rating (4★)" },
-  { name: "CodeChef DSA", url: "https://www.codechef.com/users/doodlemaster?rating=dsa-monday", icon: "https://cdn.simpleicons.org/codechef/a6e22e", statValue: "1964", statLabel: "Max rating (4★)" },
+  { name: "CodeChef DSA", url: "https://www.codechef.com/users/doodlemaster?rating=dsa-monday", icon: "https://cdn.simpleicons.org/codechef/a6e22e", statValue: "1993", statLabel: "Max rating (4★)" },
   { name: "Codeforces", url: "https://codeforces.com/profile/saurabhmishra16/", icon: "https://cdn.simpleicons.org/codeforces", statValue: "1527", statLabel: "Max rating" },
   { name: "HackerRank", url: "https://www.hackerrank.com/vector07?hr_r=1", icon: "https://cdn.simpleicons.org/hackerrank/2ec866", statValue: "6★", statLabel: "Problem solving" },
   { name: "AtCoder", url: "https://atcoder.jp/users/doodlemaster", icon: null, statValue: "1018", statLabel: "Max rating" },
