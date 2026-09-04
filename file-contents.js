@@ -400,9 +400,9 @@ export const achievements = [
 ];
 
 export const codingProfiles = [
-  { name: "LeetCode", url: "https://leetcode.com/eklavyamishra2017/", icon: "https://cdn.simpleicons.org/leetcode", statValue: "2091", statLabel: "Max rating", badge: { name: "Knight", icon: "https://leetcode.com/static/images/badges/knight.png" } },
+  { name: "LeetCode", url: "https://leetcode.com/doodlemaster/", icon: "https://cdn.simpleicons.org/leetcode", statValue: "2091", statLabel: "Max rating", badge: { name: "Knight", icon: "https://leetcode.com/static/images/badges/knight.png" } },
   { name: "CodeChef", url: "https://www.codechef.com/users/eklavyasaurabh", icon: "https://cdn.simpleicons.org/codechef/a6e22e", statValue: "1932", statLabel: "Max rating (4★)" },
-  { name: "Codeforces", url: "https://codeforces.com/profile/notdoinganymore", icon: "https://cdn.simpleicons.org/codeforces", statValue: "1527", statLabel: "Max rating" },
+  { name: "Codeforces", url: "https://codeforces.com/profile/saurabhmishra16/", icon: "https://cdn.simpleicons.org/codeforces", statValue: "1527", statLabel: "Max rating" },
   { name: "HackerRank", url: "https://www.hackerrank.com/vector07?hr_r=1", icon: "https://cdn.simpleicons.org/hackerrank/2ec866", statValue: "6★", statLabel: "Problem solving" },
   { name: "AtCoder", url: "https://atcoder.jp/users/Vector007", icon: null, statValue: "667", statLabel: "Max rating" },
   { name: "HackerEarth", url: "https://www.hackerearth.com/@eklavya12", icon: "https://cdn.simpleicons.org/hackerearth", statValue: "1523", statLabel: "Max rating" },
